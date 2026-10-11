@@ -17,6 +17,7 @@ ap.add_argument("--step", type=int, default=1)
 ap.add_argument("--times", default=None)
 ap.add_argument("--samples", type=int, default=None)
 ap.add_argument("--device", default="CPU")
+ap.add_argument("--handoff-only", action="store_true")
 ap.add_argument("--part", default=None, help="i/n: render only every n-th chunk, e.g. 0/2")
 a = ap.parse_args()
 
@@ -28,6 +29,22 @@ os.makedirs(out, exist_ok=True)
 node = bpy.data.materials["PHONE_Screen_MAT"].node_tree.nodes["SCREEN_IMAGE"]
 img = bpy.data.images.load(p("capture", "seq", "journey_a", "f0000.jpg"), check_existing=True)
 img.colorspace_settings.name = "sRGB"; img.alpha_mode = "NONE"; node.image = img
+
+def write_handoff():
+    import json
+    from bpy_extras.object_utils import world_to_camera_view
+    animate([T.t_to_frame(T.HERO_END)])
+    sc.frame_set(T.t_to_frame(T.HERO_END)); bpy.context.view_layer.update()
+    scr = bpy.data.objects.get("PHONE_Screen")
+    W, H = sc.render.resolution_x, sc.render.resolution_y
+    xs = [scr.matrix_world @ v.co for v in scr.data.vertices]
+    px = [(q.x * W, (1 - q.y) * H) for q in (world_to_camera_view(sc, sc.camera, c) for c in xs)]
+    box = {"W": W, "H": H, "min": [min(x for x, _ in px), min(y for _, y in px)], "max": [max(x for x, _ in px), max(y for _, y in px)]}
+    json.dump(box, open(os.path.join(out, "handoff.json"), "w")); print("handoff", box)
+
+
+if a.handoff_only:
+    write_handoff(); sys.exit(0)
 
 if a.times:
     frames = sorted({T.t_to_frame(float(x)) for x in a.times.split(",")})
@@ -48,16 +65,6 @@ for f in frames:
     bpy.ops.render.render(write_still=True)
     print(f"frame {f} t={T.frame_to_t(f):.2f}s  {time.time()-t0:.1f}s", flush=True)
 
-# hand-over geometry: where the display's four corners land in the last hero frame (pixels), for the 2D compositor
+
 if not a.times:
-    import json
-    from bpy_extras.object_utils import world_to_camera_view
-    sc.frame_set(T.t_to_frame(T.HERO_END)); bpy.context.view_layer.update()
-    scr = bpy.data.objects.get("PHONE_Screen")
-    if scr:
-        W, H = sc.render.resolution_x, sc.render.resolution_y
-        xs = [scr.matrix_world @ v.co for v in scr.data.vertices]
-        pts = [world_to_camera_view(sc, sc.camera, c) for c in xs]
-        px = [(q.x * W, (1 - q.y) * H) for q in pts]
-        json.dump({"W": W, "H": H, "min": [min(x for x, _ in px), min(y for _, y in px)], "max": [max(x for x, _ in px), max(y for _, y in px)]},
-                  open(os.path.join(out, "handoff.json"), "w"))
+    write_handoff()

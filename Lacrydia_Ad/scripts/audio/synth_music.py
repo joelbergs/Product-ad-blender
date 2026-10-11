@@ -25,12 +25,9 @@ E = events()
 
 # ------------------------------------------------------------------ brightness (pad low-pass cutoff in Hz) over the film
 def brightness():
-    return cfn([(0, 600), (E["emerge"], 750), (E["macro_cut_air"], 950), (E["light_sweep"], 1000),
-                (E["screen_wake"] - 0.2, 1100), (E["screen_wake"] + 1.4, 3300),          # the lift when the screen wakes
-                (E["push_in"], 3000), (E["swipe_2"], 2800), (E["pull_back"] - 0.3, 2800),
-                (E["pull_back"] + 1.2, 3800),                                              # warm accent opens up
-                (E["text_1"], 3000), (E["end_card"], 2100),
-                (E["logo_signature"], 3600), (E["logo_signature"] + 1.0, 2300), (DUR + TAIL, 1500)])
+    return cfn([(0, 600), (2.5, 750), (3.75, 950), (5.0, 1100), (6.4, 3300),             # the lift when the screen wakes
+                (7.5, 3000), (12.5, 2800), (22.4, 2800), (23.7, 3800),                     # warm accent opens up at the pull-back
+                (25.0, 3000), (25.625, 2100), (26.25, 3600), (27.25, 2300), (DUR + TAIL, 1500)])
 
 
 def pad_note(buf, midi, t_on, t_off, att, rel, amp_db, fc_fn, seed, detune_cents=4.5, kmax=18):
@@ -119,22 +116,32 @@ def sub_note(buf, midi, t0, dur, att, rel, amp_db):
 
 
 # ------------------------------------------------------------------ the arrangement
+BEAT = 60.0 / 96.0              # 96 BPM: beat 0.625 s, bar 2.5 s
+
+
 def chords():
-    """(name, t_on, t_off, midi notes, amp_db per note). Boundaries come from the config events."""
+    """(name, t_on, t_off, midi notes, amp_db per note). One chord change per bar or two (bar = 2.5 s); logo on bar 11 beat 3."""
     e = E
     return [
-        ("D drone",       1.6,                 e["emerge"] + 1.0,    [38 + 12, 45 + 12, 50 + 12], -19.0),
-        ("Dsus2",         e["emerge"],         e["macro_cut_air"],   [50, 57, 64, 69, 74],        -18.0),
-        ("Bm11",          e["macro_cut_air"],  e["light_sweep"],     [47, 54, 57, 62, 64],        -17.5),
-        ("Gmaj7",         e["light_sweep"],    e["screen_wake"],     [43, 50, 54, 59, 62],        -16.5),
-        ("Dadd9 (wake)",  e["screen_wake"],    e["push_in"],         [50, 57, 62, 64, 66, 69],     -8.5),
-        ("Bm9",           e["push_in"],        e["swipe_2"],         [47, 54, 57, 61, 62, 66],     -9.0),
-        ("Gmaj9",         e["swipe_2"],        e["pull_back"],       [43, 50, 59, 62, 66, 69],     -9.0),
-        ("Dmaj9 (warm)",  e["pull_back"],      e["text_1"],          [50, 54, 57, 61, 64, 69],     -7.5),
-        ("Gadd9",         e["text_1"],         e["end_card"],        [43, 50, 57, 59, 62, 66],    -10.0),
-        ("Asus4",         e["end_card"],       e["logo_signature"],  [45, 52, 57, 62, 64],        -10.0),
+        ("D drone",       1.0,                 3.6,                  [38 + 12, 45 + 12, 50 + 12], -19.0),
+        ("Dsus2",         2.5,                 3.75,                 [50, 57, 64, 69, 74],        -18.0),
+        ("Bm11",          3.75,                5.0,                  [47, 54, 57, 62, 64],        -17.5),
+        ("Dadd9 (wake)",  e["screen_wake"],    7.5,                  [50, 57, 62, 64, 66, 69],     -8.5),
+        ("Bm9",           7.5,                 10.0,                 [47, 54, 57, 61, 62, 66],     -9.0),
+        ("Gmaj9",         10.0,                12.5,                 [43, 50, 59, 62, 66, 69],     -9.0),
+        ("Dmaj9",         12.5,                15.0,                 [50, 54, 57, 61, 64, 69],     -8.5),
+        ("Bm9 b",         15.0,                17.5,                 [47, 54, 57, 61, 62, 66],     -9.0),
+        ("Gmaj9 b",       17.5,                20.0,                 [43, 50, 59, 62, 66, 69],     -9.0),
+        ("Em11",          20.0,                22.5,                 [40, 52, 59, 62, 67, 69],     -9.0),
+        ("Dmaj9 (warm)",  22.5,                25.0,                 [50, 54, 57, 61, 64, 69],     -7.5),
+        ("Gadd9",         25.0,                25.625,               [43, 50, 57, 59, 62, 66],    -10.0),
+        ("Asus4",         25.625,              e["logo_signature"],  [45, 52, 57, 62, 64],        -10.0),
         ("Dadd9 (logo)",  e["logo_signature"], DUR + 1.5,            [50, 57, 62, 64, 66, 69, 74], -7.0),
     ]
+
+
+ARP_BARS = [(7.5, [66, 69, 73, 74], 0.17), (10.0, [66, 71, 74, 78], 0.17), (12.5, [69, 73, 76, 78], 0.19), (15.0, [66, 69, 73, 76], 0.19),
+            (17.5, [67, 71, 74, 78], 0.20), (20.0, [67, 71, 74, 79], 0.20), (22.5, [66, 69, 73, 78], 0.22)]
 
 
 def keys_events():
@@ -143,23 +150,23 @@ def keys_events():
 
     def add(t, m, v, pan=0.0, bell=0.0):
         ev.append((t, m, v, pan, bell))
-    # scene 2 - emerging: three sparse notes after the swell, with the whoosh in the background
-    add(4.6, 69, 0.30, -0.2); add(5.9, 76, 0.26, 0.2); add(6.5, 74, 0.20, -0.1)
-    # scene 3 - macro: tiny, intimate
-    add(7.4, 78, 0.24, 0.25); add(8.9, 74, 0.20, -0.2)
+    # hero (bars 1-3): sparse notes while the light travels across the back of the phone and the phone turns
+    add(1.9, 69, 0.26, -0.2); add(3.2, 76, 0.24, 0.2); add(4.0, 74, 0.20, -0.1); add(4.4, 78, 0.22, 0.25)
     # screen wakes: the motif A - D - F# - E
     t = e["screen_wake"]
     add(t + 0.15, 69, 0.42, -0.15); add(t + 0.60, 74, 0.44, 0.0); add(t + 1.25, 78, 0.40, 0.15); add(t + 1.85, 76, 0.34, 0.05)
-    # scene 5/6 - in the app: chord tones, kept away from the swipe moments (+-0.35 s)
-    for tt, m, v, p in [(14.95, 71, 0.30, -0.2), (15.5, 78, 0.28, 0.2), (16.25, 74, 0.28, 0.0), (16.9, 73, 0.24, -0.15),
-                        (18.5, 74, 0.30, 0.1), (19.1, 71, 0.26, -0.2), (19.55, 78, 0.28, 0.2), (20.55, 81, 0.22, 0.25),
-                        (21.25, 78, 0.26, -0.1), (21.7, 74, 0.24, 0.0)]:
-        add(tt, m, v, p)
-    # pull back: warm lift
+    # the app (bars 4-9): a soft eighth-note arpeggio carries the picture; accents on the beats
+    for t0, notes, vel in ARP_BARS:
+        for k in range(8):
+            tt = t0 + k * BEAT / 2
+            if tt >= 25.0: break
+            m = notes[[0, 1, 2, 3, 2, 1, 2, 3][k]]
+            add(tt + 0.01 * ((k * 7) % 3), m, vel * (1.25 if k % 4 == 0 else 0.8), -0.25 if k % 2 == 0 else 0.25)
+    # pull back (bar 10): warm lift, a longer melody note
     t = e["pull_back"]
-    add(t + 0.35, 74, 0.36, 0.0); add(t + 1.2, 69, 0.30, -0.2); add(t + 1.8, 78, 0.32, 0.2); add(t + 2.5, 76, 0.28, 0.0)
-    # tagline: E then F# land on the two lines
-    add(e["text_1"], 76, 0.46, -0.1); add(e["text_2"], 78, 0.46, 0.1, 0.2); add(27.2, 74, 0.32, 0.0)
+    add(t + 0.35, 74, 0.36, 0.0); add(t + 1.2, 69, 0.30, -0.2); add(t + 1.8, 78, 0.32, 0.2)
+    # bar 11-12: E then F# land on the logo and the slogan
+    add(e["logo_signature"] + 0.0, 76, 0.40, -0.1); add(e["text_2"], 78, 0.46, 0.1, 0.2); add(28.7, 74, 0.30, 0.0)
     return ev
 
 

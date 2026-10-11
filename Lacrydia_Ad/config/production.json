@@ -1,323 +1,342 @@
 {
-  "title": "Lacrydia - cinematic product film",
-  "fps": 30,
-  "duration_s": 30.0,
-  "profiles": {
-    "thumb": {
-      "width": 960,
-      "height": 540,
-      "samples": 16,
-      "denoise": true
-    },
-    "preview": {
-      "width": 1280,
-      "height": 720,
-      "samples": 32,
-      "denoise": true
-    },
-    "review": {
-      "width": 1920,
-      "height": 1080,
-      "samples": 64,
-      "denoise": true
-    },
-    "final": {
-      "width": 3840,
-      "height": 2160,
-      "samples": 160,
-      "denoise": true
-    },
-    "qc": {
-      "width": 1600,
-      "height": 900,
-      "samples": 96,
-      "denoise": true
-    }
+ "title": "Lacrydia - cinematic product film",
+ "fps": 30,
+ "duration_s": 30.0,
+ "profiles": {
+  "thumb": {
+   "width": 960,
+   "height": 540,
+   "samples": 16,
+   "denoise": true
   },
-  "phone": {
-    "model_note": "Procedural approximation of a current-generation Pro phone (about 150 x 71.9 x 8.75 mm). Not an exact Apple model.",
-    "finish": "burgundy",
-    "size_cm": {
-      "w": 7.19,
-      "h": 15.0,
-      "t": 0.875
-    }
+  "preview": {
+   "width": 1280,
+   "height": 720,
+   "samples": 32,
+   "denoise": true
   },
-  "scenes": [
-    {
-      "id": "scene_01",
-      "name": "Opening",
-      "t0": 0.0,
-      "t1": 3.75
-    },
-    {
-      "id": "scene_02",
-      "name": "The world (Tree)",
-      "t0": 3.75,
-      "t1": 7.5
-    },
-    {
-      "id": "scene_03",
-      "name": "Photographs",
-      "t0": 7.5,
-      "t1": 12.5
-    },
-    {
-      "id": "scene_04",
-      "name": "Privacy",
-      "t0": 12.5,
-      "t1": 15.0
-    },
-    {
-      "id": "scene_05",
-      "name": "Together (sharing)",
-      "t0": 15.0,
-      "t1": 20.0
-    },
-    {
-      "id": "scene_06",
-      "name": "The complete experience",
-      "t0": 20.0,
-      "t1": 25.0
-    },
-    {
-      "id": "scene_07",
-      "name": "Brand reveal",
-      "t0": 25.0,
-      "t1": 30.0
-    }
-  ],
-  "screen": {
-    "native_px": [
-      1206,
-      2622
-    ],
-    "wake_t": 3.125,
-    "wake_dur": 0.8,
-    "plate_t0": 0.0,
-    "authentic_source": "design/brand/mockups/_source/tour-screen-1..5.png in lacrydia-social (brand production versions of the real welcome-tour screens, 9:41 + Dynamic Island drawn in)",
-    "pages": [
-      {
-        "file": "1.png",
-        "name": "Welcome",
-        "show_t": 0.0,
-        "swipe_out_t": 5.0
-      },
-      {
-        "file": "2.png",
-        "name": "The Tree",
-        "show_t": 5.0,
-        "swipe_out_t": 12.5
-      },
-      {
-        "file": "3.png",
-        "name": "Privacy",
-        "show_t": 12.5,
-        "swipe_out_t": 15.0
-      },
-      {
-        "file": "4.png",
-        "name": "Together",
-        "show_t": 15.0,
-        "swipe_out_t": 20.0
-      },
-      {
-        "file": "5.png",
-        "name": "Ready",
-        "show_t": 20.0,
-        "swipe_out_t": null
-      }
-    ],
-    "swipe_dur": 0.55,
-    "source_dir": "assets/lacrydia/screens_brand"
+  "review": {
+   "width": 1920,
+   "height": 1080,
+   "samples": 64,
+   "denoise": true
   },
-  "copy": {
-    "tagline_line1": "Your images.",
-    "tagline_line2": "Your world.",
-    "tagline_source": "OVERVIEW.md and App Store subtitle in lacrydia-social (brand guidelines list 'Grow your photos.' as an alternative; lead line is a pending owner decision)",
-    "status_line": null,
-    "url": null,
-    "url_source": "Website and waitlist are live per lacrydia-social OVERVIEW.md",
-    "note": "Brand reveal shows only LACRYDIA + the slogan (no unsupported claims). status_line/url can be re-enabled: both are verified facts in lacrydia-social (not released yet; lacrydia.com has a waitlist)."
+  "final": {
+   "width": 3840,
+   "height": 2160,
+   "samples": 160,
+   "denoise": true
   },
-  "brand": {
-    "ink": "#0A0A0B",
-    "paper": "#F4F4F4",
-    "amber": "#FFA62B",
-    "amber_soft": "#FFD08A",
-    "grey_900": "#161618",
-    "grey_400": "#9C9C9F",
-    "wordmark": {
-      "font": "Inter SemiBold",
-      "case": "upper",
-      "tracking_em": 0.34,
-      "mark_gap_of_mark_height": 0.42
-    }
-  },
-  "events": [
-    {
-      "id": "music_in",
-      "t": 0.6,
-      "what": "music texture begins (almost inaudible air)",
-      "layer": "MUSIC"
-    },
-    {
-      "id": "light_band_start",
-      "t": 1.25,
-      "what": "narrow band of light starts to sweep across the dark display (airy, soft)",
-      "layer": "WHOOSH"
-    },
-    {
-      "id": "first_reveal",
-      "t": 2.5,
-      "what": "glass and burgundy frame edge are revealed: soft deep swell",
-      "layer": "IMPACTS"
-    },
-    {
-      "id": "screen_wake",
-      "t": 3.125,
-      "what": "display wakes into the Welcome screen: restrained digital bloom",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "dolly_in",
-      "t": 3.75,
-      "what": "camera starts a slow push towards the display (air)",
-      "layer": "WHOOSH"
-    },
-    {
-      "id": "swipe_tree",
-      "t": 5.0,
-      "what": "page swipe Welcome -> The Tree (0.55 s) + tonal accent",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_out_1",
-      "t": 7.5,
-      "what": "photo card 1 leaves the display plane (soft glass tick)",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_out_2",
-      "t": 8.125,
-      "what": "photo card 2",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_out_3",
-      "t": 8.75,
-      "what": "photo card 3",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_out_4",
-      "t": 9.375,
-      "what": "photo card 4",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_out_5",
-      "t": 10.0,
-      "what": "photo card 5 + musical lift (bar 5)",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_out_6",
-      "t": 10.625,
-      "what": "photo card 6",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "cards_in",
-      "t": 11.875,
-      "what": "cards glide back and fade, camera returns to the display (air)",
-      "layer": "WHOOSH"
-    },
-    {
-      "id": "swipe_privacy",
-      "t": 12.5,
-      "what": "page swipe The Tree -> Privacy",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "swipe_together",
-      "t": 15.0,
-      "what": "page swipe Privacy -> Together",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "push_post",
-      "t": 16.25,
-      "what": "slow push towards the feed post (air)",
-      "layer": "WHOOSH"
-    },
-    {
-      "id": "swipe_ready",
-      "t": 20.0,
-      "what": "page swipe Together -> Ready; pull-back begins",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "pullback",
-      "t": 20.0,
-      "what": "camera pulls back to the three-screen hero composition (air, 5 s)",
-      "layer": "WHOOSH"
-    },
-    {
-      "id": "dim_down",
-      "t": 25.0,
-      "what": "everything falls away into near-black: deep downbeat",
-      "layer": "IMPACTS"
-    },
-    {
-      "id": "logo_hit",
-      "t": 26.25,
-      "what": "logo reveal on the musical climax (beat 3 of bar 11): one premium accent",
-      "layer": "LOGO"
-    },
-    {
-      "id": "slogan_1",
-      "t": 26.9,
-      "what": "slogan line 1 'YOUR IMAGES.'",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "slogan_2",
-      "t": 27.5,
-      "what": "slogan line 2 'YOUR WORLD.'",
-      "layer": "INTERFACE"
-    },
-    {
-      "id": "end",
-      "t": 30.0,
-      "what": "film ends; everything must have decayed naturally",
-      "layer": "MUSIC"
-    }
-  ],
-  "audio": {
-    "sample_rate": 48000,
-    "channels": 2,
-    "target_lufs": -14.0,
-    "tolerance_lu": 1.5,
-    "true_peak_dbtp": -1.0
-  },
-  "music": {
-    "bpm": 96,
-    "beat_s": 0.625,
-    "bar_s": 2.5,
-    "bars": 12,
-    "time_signature": "4/4",
-    "note": "12 bars x 2.5 s = 30.0 s exactly. Every scene change and the logo land on a beat."
-  },
-  "photo_cards": {
-    "files": [
-      "p3.jpg",
-      "p6.jpg",
-      "p8.jpg",
-      "p18.jpg",
-      "p17.jpg",
-      "p21.jpg"
-    ],
-    "source": "app/assets/tour in lacrydia-social (bundled demo photographs; provenance/licences are not documented in the repo)"
+  "qc": {
+   "width": 1600,
+   "height": 900,
+   "samples": 96,
+   "denoise": true
   }
+ },
+ "phone": {
+  "model_note": "Procedural approximation of a current-generation Pro phone (about 150 x 71.9 x 8.75 mm). Not an exact Apple model.",
+  "finish": "burgundy",
+  "size_cm": {
+   "w": 7.19,
+   "h": 15.0,
+   "t": 0.875
+  }
+ },
+ "scenes": [
+  {
+   "id": "scene_01",
+   "name": "Opening",
+   "t0": 0.0,
+   "t1": 3.75
+  },
+  {
+   "id": "scene_02",
+   "name": "The world (Tree)",
+   "t0": 3.75,
+   "t1": 7.5
+  },
+  {
+   "id": "scene_03",
+   "name": "Photographs",
+   "t0": 7.5,
+   "t1": 12.5
+  },
+  {
+   "id": "scene_04",
+   "name": "Privacy",
+   "t0": 12.5,
+   "t1": 15.0
+  },
+  {
+   "id": "scene_05",
+   "name": "Together (sharing)",
+   "t0": 15.0,
+   "t1": 20.0
+  },
+  {
+   "id": "scene_06",
+   "name": "The complete experience",
+   "t0": 20.0,
+   "t1": 25.0
+  },
+  {
+   "id": "scene_07",
+   "name": "Brand reveal",
+   "t0": 25.0,
+   "t1": 30.0
+  }
+ ],
+ "screen": {
+  "native_px": [
+   1206,
+   2622
+  ],
+  "wake_t": 3.125,
+  "wake_dur": 0.8,
+  "plate_t0": 0.0,
+  "authentic_source": "design/brand/mockups/_source/tour-screen-1..5.png in lacrydia-social (brand production versions of the real welcome-tour screens, 9:41 + Dynamic Island drawn in)",
+  "pages": [
+   {
+    "file": "1.png",
+    "name": "Welcome",
+    "show_t": 0.0,
+    "swipe_out_t": 5.0
+   },
+   {
+    "file": "2.png",
+    "name": "The Tree",
+    "show_t": 5.0,
+    "swipe_out_t": 12.5
+   },
+   {
+    "file": "3.png",
+    "name": "Privacy",
+    "show_t": 12.5,
+    "swipe_out_t": 15.0
+   },
+   {
+    "file": "4.png",
+    "name": "Together",
+    "show_t": 15.0,
+    "swipe_out_t": 20.0
+   },
+   {
+    "file": "5.png",
+    "name": "Ready",
+    "show_t": 20.0,
+    "swipe_out_t": null
+   }
+  ],
+  "swipe_dur": 0.55,
+  "source_dir": "assets/lacrydia/screens_brand"
+ },
+ "copy": {
+  "tagline_line1": "Your images.",
+  "tagline_line2": "Your world.",
+  "tagline_source": "OVERVIEW.md and App Store subtitle in lacrydia-social (brand guidelines list 'Grow your photos.' as an alternative; lead line is a pending owner decision)",
+  "status_line": null,
+  "url": null,
+  "url_source": "Website and waitlist are live per lacrydia-social OVERVIEW.md",
+  "note": "Brand reveal shows only LACRYDIA + the slogan (no unsupported claims). status_line/url can be re-enabled: both are verified facts in lacrydia-social (not released yet; lacrydia.com has a waitlist)."
+ },
+ "brand": {
+  "ink": "#0A0A0B",
+  "paper": "#F4F4F4",
+  "amber": "#FFA62B",
+  "amber_soft": "#FFD08A",
+  "grey_900": "#161618",
+  "grey_400": "#9C9C9F",
+  "wordmark": {
+   "font": "Inter SemiBold",
+   "case": "upper",
+   "tracking_em": 0.34,
+   "mark_gap_of_mark_height": 0.42
+  }
+ },
+ "events": [
+  {
+   "id": "atmos_in",
+   "t": 0.4,
+   "what": "very soft low tone wakes in the dark",
+   "layer": "ATMOSPHERE"
+  },
+  {
+   "id": "first_light",
+   "t": 0.9,
+   "what": "a first sliver of light touches the burgundy edge",
+   "layer": "MATERIAL"
+  },
+  {
+   "id": "sweep_whoosh",
+   "t": 1.1,
+   "what": "light band begins to travel across the back glass and logo (1.0-2.8 s)",
+   "layer": "WHOOSH"
+  },
+  {
+   "id": "lens_glint",
+   "t": 1.8,
+   "what": "light catches the camera lens rings",
+   "layer": "MATERIAL"
+  },
+  {
+   "id": "macro_air",
+   "t": 2.0,
+   "what": "camera glides back from the macro (2.0-3.4 s)",
+   "layer": "WHOOSH"
+  },
+  {
+   "id": "emerge",
+   "t": 2.5,
+   "what": "bar 2: first chord (Dsus2); the phone is revealed",
+   "layer": "MUSIC"
+  },
+  {
+   "id": "emerge_swell",
+   "t": 2.5,
+   "what": "soft deep swell as the silhouette is revealed",
+   "layer": "IMPACTS"
+  },
+  {
+   "id": "rotate_whoosh_1",
+   "t": 3.6,
+   "what": "phone turns from back towards its front (3.75-6.25 s)",
+   "layer": "WHOOSH"
+  },
+  {
+   "id": "macro_cut_air",
+   "t": 3.75,
+   "what": "bar 2 beat 3: chord Bm11",
+   "layer": "MUSIC"
+  },
+  {
+   "id": "light_sweep",
+   "t": 4.375,
+   "what": "chord colour shifts towards the wake",
+   "layer": "MUSIC"
+  },
+  {
+   "id": "turn_whoosh_2",
+   "t": 4.9,
+   "what": "second half of the turn, front comes into view",
+   "layer": "WHOOSH"
+  },
+  {
+   "id": "screen_wake",
+   "t": 5.0,
+   "what": "display wakes with the Tree screen; piano motif A-D-F#-E",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "push_in",
+   "t": 7.5,
+   "what": "hand-over to the display: the camera glides in (bar 4)",
+   "layer": "WHOOSH"
+  },
+  {
+   "id": "swipe_1",
+   "t": 8.3,
+   "what": "tap on the Travel branch: the camera flies into the tree",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "text_a",
+   "t": 8.75,
+   "what": "headline 1 appears: 'Your life, branch by branch.'",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "swipe_2",
+   "t": 11.7,
+   "what": "tap Open: branch page",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "swipe_3",
+   "t": 15.0,
+   "what": "tap a photo: viewer opens",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "swipe_5",
+   "t": 17.6,
+   "what": "tap Home: feed ('Share.')",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "swipe_4",
+   "t": 19.8,
+   "what": "tap Explore ('Discover.')",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "swipe_6",
+   "t": 21.5,
+   "what": "tap Playlists ('Collect.')",
+   "layer": "INTERFACE"
+  },
+  {
+   "id": "pull_back",
+   "t": 22.5,
+   "what": "three devices, the camera pulls back (bar 10)",
+   "layer": "WHOOSH"
+  },
+  {
+   "id": "text_1",
+   "t": 25.0,
+   "what": "bar 11: everything falls away; chord Gadd9",
+   "layer": "MUSIC"
+  },
+  {
+   "id": "end_card",
+   "t": 25.625,
+   "what": "chord Asus4: the question before the answer",
+   "layer": "MUSIC"
+  },
+  {
+   "id": "logo_signature",
+   "t": 26.25,
+   "what": "bar 11 beat 3: logo lands; Dadd9 resolution",
+   "layer": "LOGO"
+  },
+  {
+   "id": "text_2",
+   "t": 27.5,
+   "what": "bar 12: slogan line, piano F#",
+   "layer": "MUSIC"
+  },
+  {
+   "id": "end",
+   "t": 30.0,
+   "what": "film ends, everything has decayed",
+   "layer": "MUSIC"
+  }
+ ],
+ "audio": {
+  "sample_rate": 48000,
+  "channels": 2,
+  "target_lufs": -14.0,
+  "tolerance_lu": 1.5,
+  "true_peak_dbtp": -1.0
+ },
+ "music": {
+  "bpm": 96,
+  "beat_s": 0.625,
+  "bar_s": 2.5,
+  "bars": 12,
+  "time_signature": "4/4",
+  "note": "12 bars x 2.5 s = 30.0 s exactly. Every scene change and the logo land on a beat.",
+  "structure": "96 BPM, bar = 2.5 s: hero 0-7.5 s (bars 1-3), app 7.5-25 s, brand 25-30 s; logo on bar 11 beat 3"
+ },
+ "photo_cards": {
+  "files": [
+   "p3.jpg",
+   "p6.jpg",
+   "p8.jpg",
+   "p18.jpg",
+   "p17.jpg",
+   "p21.jpg"
+  ],
+  "source": "app/assets/tour in lacrydia-social (bundled demo photographs; provenance/licences are not documented in the repo)"
+ }
 }
