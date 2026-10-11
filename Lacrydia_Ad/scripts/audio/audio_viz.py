@@ -101,9 +101,13 @@ def timeline_image(stems, mix, path, ev_lines, scenes=None, dur=30.0, size=(1800
         nfr = len(m) // w
         r = np.sqrt(np.mean(m[: nfr * w].reshape(nfr, w) ** 2, axis=1) + 1e-14)
         rdb = 20 * np.log10(r)
-        lo, hi = -90.0, -6.0
+        lo, hi = -80.0, -10.0
         xs = left + pw * (np.arange(nfr) * win_s) / dur
         ys = y0 + (ph_row - 4) * (1 - np.clip((rdb - lo) / (hi - lo), 0, 1)) + 1
+        for gdb in (-70, -50, -30):
+            gy = y0 + (ph_row - 4) * (1 - (gdb - lo) / (hi - lo)) + 1
+            d.line([(left, gy), (left + pw, gy)], fill=(48, 48, 54), width=1)
+            d.text((left + pw - 28, gy - 11), f"{gdb}", fill=(90, 90, 100), font=fs)
         pts = list(zip(xs, ys)) + [(xs[-1], y0 + ph_row - 3), (xs[0], y0 + ph_row - 3)]
         d.polygon(pts, fill=tuple(int(c * 0.45) for c in colors[ri % len(colors)]))
         d.line(list(zip(xs, ys)), fill=colors[ri % len(colors)], width=1)

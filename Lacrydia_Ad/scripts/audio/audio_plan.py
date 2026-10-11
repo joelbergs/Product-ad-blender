@@ -37,8 +37,8 @@ MASTER_TRIM_DB = 0.2
 # 'film_start' is the pseudo event t=0 (scene_01 t0).
 ENTRIES = [
     ("MUSIC_score",            "MUSIC",      "assets/audio/music/lacrydia_score_v1.wav", "film_start",      +0.0, 0.00, 0.00),
-    ("ATMOSPHERE_room_tone",   "ATMOSPHERE", "assets/audio/sfx/atmos_room_tone.wav",     "film_start",     -51.0, 0.00, 0.60),
-    ("ATMOSPHERE_low_tone",    "ATMOSPHERE", "assets/audio/sfx/atmos_low_tone.wav",      "atmos_in",       -27.0, 0.00, 0.60),
+    ("ATMOSPHERE_room_tone",   "ATMOSPHERE", "assets/audio/sfx/atmos_room_tone.wav",     "film_start",     -46.0, 0.00, 0.60),
+    ("ATMOSPHERE_low_tone",    "ATMOSPHERE", "assets/audio/sfx/atmos_low_tone.wav",      "atmos_in",       -29.0, 0.00, 0.60),
     ("IMPACTS_emerge_swell",   "IMPACTS",    "assets/audio/sfx/impact_emerge_swell.wav", "emerge_swell",   -17.0, 0.00, 0.40),
     ("IMPACTS_screen_wake",    "IMPACTS",    "assets/audio/sfx/impact_screen_wake_sub.wav", "screen_wake", -15.0, 0.00, 0.40),
     ("IMPACTS_pull_back",      "IMPACTS",    "assets/audio/sfx/impact_pull_back_sub.wav", "pull_back",     -16.0, 0.00, 0.40),

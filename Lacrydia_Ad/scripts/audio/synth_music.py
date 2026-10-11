@@ -196,7 +196,8 @@ def render():
     # opening: almost silent for ~1.2 s, then a slow bloom of the score
     open_env = db_curve([(0, -120), (0.8, -75), (1.6, -42), (3.0, -14), (4.6, 0)], n=NT)
     # ending: natural ring-out, then a raised-cosine finish that is exactly zero at 30.0 s
-    end_env = np.where(t < 28.9, 1.0, 1 - cos_fade((t - 28.9) / (DUR - 28.9)))
+    uu = np.clip((t - 28.95) / (DUR - 28.95), 0, 1)
+    end_env = (0.5 + 0.5 * np.cos(np.pi * uu)) ** 2
     end_env = np.where(t >= DUR, 0.0, end_env)
     mix = mix * (open_env * end_env)[:, None]
     # bus glue: gentle 3:1 peak-driven compression (zero-phase look-ahead) keeps the crest factor low, so the finished
