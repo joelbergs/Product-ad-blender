@@ -1,0 +1,18 @@
+import { enterTree } from './flow.mjs'; import { hideLogBox } from './capture_lib.mjs';
+import fs from 'node:fs';
+const dpr = Number(process.argv[2] || 2);
+const { browser, context, page } = await enterTree({ dpr });
+const cdp = await context.newCDPSession(page);
+const frames = [];
+cdp.on('Page.screencastFrame', async (f) => { frames.push({ t: f.metadata.timestamp, data: f.data }); await cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); });
+await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 90, everyNthFrame: 1 });
+const t0 = Date.now();
+await page.locator('[aria-label^="Travel,"]').first().click({ force: true });
+await page.waitForTimeout(4000);
+await cdp.send('Page.stopScreencast');
+const dt = (Date.now() - t0) / 1000;
+const ts = frames.map((f) => f.t); const gaps = ts.slice(1).map((t, i) => t - ts[i]);
+console.log(`dpr ${dpr}: ${frames.length} frames in ${dt.toFixed(1)}s -> ${(frames.length / dt).toFixed(1)} fps; median gap ${(gaps.sort((a,b)=>a-b)[Math.floor(gaps.length/2)]*1000).toFixed(0)} ms, max gap ${(Math.max(...gaps)*1000).toFixed(0)} ms`);
+fs.mkdirSync('motion_test', { recursive: true });
+frames.slice(0, 3).forEach((f, i) => fs.writeFileSync(`motion_test/f${i}.jpg`, Buffer.from(f.data, 'base64')));
+await browser.close();

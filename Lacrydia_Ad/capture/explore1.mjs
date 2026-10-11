@@ -1,0 +1,11 @@
+import { openApp, shot } from './capture_lib.mjs';
+const { browser, page, misses, errors } = await openApp();
+const t0 = Date.now();
+await page.goto('http://localhost:8099/', { waitUntil: 'load', timeout: 300000 });
+console.log('loaded', ((Date.now() - t0) / 1000).toFixed(0), 's');
+await page.waitForTimeout(8000);
+console.log('shot', await shot(page, 'explore1_first'));
+console.log('title:', await page.title(), '| url:', page.url());
+console.log('buttons:', (await page.locator('[role=button], button, [data-testid]').allInnerTexts()).slice(0, 12));
+console.log('errors:', errors.slice(0, 6)); console.log('missed images:', [...misses].slice(0, 4));
+await browser.close();

@@ -1,0 +1,18 @@
+import { enterTree } from './flow.mjs'; import { shot, hideLogBox } from './capture_lib.mjs';
+const { browser, page } = await enterTree();
+const out = [];
+const snap = async (name, wait = 2500) => { await page.waitForTimeout(wait); await hideLogBox(page); out.push(await shot(page, name)); };
+const tap = async (sel, name, wait = 3000) => { try { await page.locator(sel).first().click({ timeout: 8000, force: true }); await snap(name, wait); return true; } catch (e) { console.log('FAILED', name, String(e).split('\n')[0].slice(0, 90)); return false; } };
+await snap('a01_tree_overview', 500);
+await tap('[aria-label^="Travel,"]', 'a02_tree_travel_open', 4500);
+await tap('[aria-label^="Italy,"]', 'a03_tree_italy_open', 4500);
+const labels = await page.evaluate(() => [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')).filter((l) => l && l.length < 70).slice(0, 40));
+console.log('labels in branch view:', JSON.stringify(labels));
+await tap('[role=tab][aria-label="Home"]', 'a04_home', 3000);
+await tap('[role=tab][aria-label="Explore"]', 'a05_explore', 3000);
+await tap('[role=tab][aria-label="Playlists"]', 'a06_playlists', 3000);
+await tap('text=Summer 2026', 'a07_playlist_detail', 3500);
+await page.goBack().catch(() => {}); await page.waitForTimeout(1500);
+await tap('[role=tab][aria-label="Profile"]', 'a08_profile', 3500);
+console.log(out.map((f) => f.split('/').pop()).join(' '));
+await browser.close();

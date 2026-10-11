@@ -20,3 +20,6 @@ Lacrydia_Ad/assets/reference/
 Lacrydia_Ad/previews/
 # generated glyph mask (re-created by scripts/make_logo_mask.py)
 Lacrydia_Ad/assets/phone/
+Lacrydia_Ad/capture/*
+!Lacrydia_Ad/capture/*.mjs
+!Lacrydia_Ad/capture/README.md

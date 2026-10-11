@@ -1,0 +1,14 @@
+import { enterTree } from './flow.mjs'; import { makeRecorder } from './bf_lib.mjs';
+import fs from 'node:fs';
+const ctx = await enterTree({ dpr: 2, bf: true });
+const { browser, page, bf } = ctx;
+const box = await page.locator('[aria-label^="Travel,"]').first().boundingBox();
+await page.waitForTimeout(1500); await bf.stopPump();
+const R = await makeRecorder(bf);
+fs.rmSync('vt_test', { recursive: true, force: true }); fs.mkdirSync('vt_test', { recursive: true });
+const t0 = Date.now();
+await R.frame('vt_test/f000.jpg');
+await R.tap(box.x + box.width / 2, box.y + box.height / 2);
+for (let i = 1; i <= 60; i++) await R.frame(`vt_test/f${String(i).padStart(3, '0')}.jpg`);
+console.log(`61 frames in ${((Date.now() - t0) / 1000).toFixed(1)} s real time`);
+await browser.close();

@@ -1,0 +1,15 @@
+import { enterTree } from './flow.mjs'; import { shot, hideLogBox } from './capture_lib.mjs';
+const { browser, page } = await enterTree({ dpr: 1 });
+const labels = async () => page.evaluate(() => [...new Set([...document.querySelectorAll('[aria-label],[role=button],[role=switch],[role=radio]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.y < 874 && r.y > -10; }).map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/\n/g, ' ').slice(0, 44)).filter(Boolean))].slice(0, 40));
+const step = async (name, fn, wait = 2500) => { try { await fn(); } catch (e) { console.log('  step failed:', String(e).split('\n')[0].slice(0, 90)); } await page.waitForTimeout(wait); await hideLogBox(page); await shot(page, name); console.log(name, '\n   ', JSON.stringify(await labels())); };
+const clk = (l) => () => page.locator(`[aria-label="${l}"]`).first().click({ force: true });
+await step('g01_travel', () => page.locator('[aria-label^="Travel,"]').first().click({ force: true }), 4500);
+await step('g02_open', () => page.getByText('Open', { exact: true }).first().click({ force: true }));
+await step('g03_photo', () => page.locator('[aria-label^="Photo,"]').first().click({ force: true }), 3500);
+await step('g04_like', clk('Like'));
+await step('g05_comment', clk('Comment'), 3000);
+await page.keyboard.press('Escape'); await page.waitForTimeout(800);
+await step('g06_share', clk('Share'), 3000);
+await page.keyboard.press('Escape'); await page.waitForTimeout(800);
+await step('g07_playlist', clk('Playlist'), 3000);
+await browser.close();

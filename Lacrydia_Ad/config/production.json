@@ -46,56 +46,44 @@
   "scenes": [
     {
       "id": "scene_01",
-      "name": "Darkness",
+      "name": "Opening",
       "t0": 0.0,
-      "t1": 3.0
+      "t1": 3.75
     },
     {
       "id": "scene_02",
-      "name": "Emerging",
-      "t0": 3.0,
-      "t1": 7.0
+      "name": "The world (Tree)",
+      "t0": 3.75,
+      "t1": 7.5
     },
     {
       "id": "scene_03",
-      "name": "Macro",
-      "t0": 7.0,
-      "t1": 10.0
+      "name": "Photographs",
+      "t0": 7.5,
+      "t1": 12.5
     },
     {
       "id": "scene_04",
-      "name": "Screen wakes",
-      "t0": 10.0,
-      "t1": 14.0
+      "name": "Privacy",
+      "t0": 12.5,
+      "t1": 15.0
     },
     {
       "id": "scene_05",
-      "name": "Into the app",
-      "t0": 14.0,
-      "t1": 17.0
+      "name": "Together (sharing)",
+      "t0": 15.0,
+      "t1": 20.0
     },
     {
       "id": "scene_06",
-      "name": "The app in use",
-      "t0": 17.0,
-      "t1": 22.0
-    },
-    {
-      "id": "scene_07",
-      "name": "Pull back",
-      "t0": 22.0,
+      "name": "The complete experience",
+      "t0": 20.0,
       "t1": 25.0
     },
     {
-      "id": "scene_08",
-      "name": "Typography",
+      "id": "scene_07",
+      "name": "Brand reveal",
       "t0": 25.0,
-      "t1": 28.0
-    },
-    {
-      "id": "scene_09",
-      "name": "End card",
-      "t0": 28.0,
       "t1": 30.0
     }
   ],
@@ -104,51 +92,53 @@
       1206,
       2622
     ],
-    "wake_t": 11.6,
+    "wake_t": 3.125,
     "wake_dur": 0.8,
-    "plate_t0": 11.6,
-    "authentic_source": "Lacrydia_Ad/assets/lacrydia/screens/1..5.png (real screenshots of the app's welcome tour, from the private lacrydia-social repo)",
+    "plate_t0": 0.0,
+    "authentic_source": "design/brand/mockups/_source/tour-screen-1..5.png in lacrydia-social (brand production versions of the real welcome-tour screens, 9:41 + Dynamic Island drawn in)",
     "pages": [
       {
         "file": "1.png",
         "name": "Welcome",
-        "show_t": 11.6,
-        "swipe_out_t": 14.6
+        "show_t": 0.0,
+        "swipe_out_t": 5.0
       },
       {
         "file": "2.png",
         "name": "The Tree",
-        "show_t": 14.6,
-        "swipe_out_t": 18.0
+        "show_t": 5.0,
+        "swipe_out_t": 12.5
       },
       {
         "file": "3.png",
         "name": "Privacy",
-        "show_t": 18.0,
-        "swipe_out_t": 20.0
+        "show_t": 12.5,
+        "swipe_out_t": 15.0
       },
       {
         "file": "4.png",
         "name": "Together",
-        "show_t": 20.0,
-        "swipe_out_t": 22.8
+        "show_t": 15.0,
+        "swipe_out_t": 20.0
       },
       {
         "file": "5.png",
         "name": "Ready",
-        "show_t": 22.8,
+        "show_t": 20.0,
         "swipe_out_t": null
       }
     ],
-    "swipe_dur": 0.55
+    "swipe_dur": 0.55,
+    "source_dir": "assets/lacrydia/screens_brand"
   },
   "copy": {
     "tagline_line1": "Your images.",
     "tagline_line2": "Your world.",
     "tagline_source": "OVERVIEW.md and App Store subtitle in lacrydia-social (brand guidelines list 'Grow your photos.' as an alternative; lead line is a pending owner decision)",
-    "status_line": "Coming soon to iPhone",
-    "url": "lacrydia.com",
-    "url_source": "Website and waitlist are live per lacrydia-social OVERVIEW.md"
+    "status_line": null,
+    "url": null,
+    "url_source": "Website and waitlist are live per lacrydia-social OVERVIEW.md",
+    "note": "Brand reveal shows only LACRYDIA + the slogan (no unsupported claims). status_line/url can be re-enabled: both are verified facts in lacrydia-social (not released yet; lacrydia.com has a waitlist)."
   },
   "brand": {
     "ink": "#0A0A0B",
@@ -166,115 +156,168 @@
   },
   "events": [
     {
-      "id": "atmos_in",
-      "t": 1.2,
-      "what": "very soft low tone begins to wake (no visuals yet)"
+      "id": "music_in",
+      "t": 0.6,
+      "what": "music texture begins (almost inaudible air)",
+      "layer": "MUSIC"
     },
     {
-      "id": "first_light",
-      "t": 2.3,
-      "what": "a narrow strip of light starts to graze the metal frame edge"
+      "id": "light_band_start",
+      "t": 1.25,
+      "what": "narrow band of light starts to sweep across the dark display (airy, soft)",
+      "layer": "WHOOSH"
     },
     {
-      "id": "emerge",
-      "t": 3.0,
-      "what": "phone starts to move out of the dark (rotation + camera glide begin)"
-    },
-    {
-      "id": "emerge_swell",
-      "t": 3.4,
-      "what": "soft deep swell as the silhouette is revealed"
-    },
-    {
-      "id": "rotate_whoosh_1",
-      "t": 4.4,
-      "what": "soft air sweep, phone turning towards back view (4.4-6.8)"
-    },
-    {
-      "id": "macro_cut_air",
-      "t": 6.9,
-      "what": "camera glides into macro on camera module (air, 6.9-7.6)"
-    },
-    {
-      "id": "lens_glint",
-      "t": 8.3,
-      "what": "light catches the lens rings (single subtle glass/metal accent)"
-    },
-    {
-      "id": "light_sweep",
-      "t": 9.5,
-      "what": "reflection sweeps across frame, acting as transition to the screen (9.5-10.4)"
-    },
-    {
-      "id": "turn_whoosh_2",
-      "t": 10.2,
-      "what": "phone turns to show its screen (10.2-12.4)"
+      "id": "first_reveal",
+      "t": 2.5,
+      "what": "glass and burgundy frame edge are revealed: soft deep swell",
+      "layer": "IMPACTS"
     },
     {
       "id": "screen_wake",
-      "t": 11.6,
-      "what": "display wakes up (soft digital bloom, restrained)"
+      "t": 3.125,
+      "what": "display wakes into the Welcome screen: restrained digital bloom",
+      "layer": "INTERFACE"
     },
     {
-      "id": "push_in",
-      "t": 13.8,
-      "what": "camera moves in towards the screen (13.8-17.0)"
+      "id": "dolly_in",
+      "t": 3.75,
+      "what": "camera starts a slow push towards the display (air)",
+      "layer": "WHOOSH"
     },
     {
-      "id": "swipe_1",
-      "t": 14.6,
-      "what": "page swipe, welcome -> Tree (0.55 s)"
+      "id": "swipe_tree",
+      "t": 5.0,
+      "what": "page swipe Welcome -> The Tree (0.55 s) + tonal accent",
+      "layer": "INTERFACE"
     },
     {
-      "id": "swipe_2",
-      "t": 18.0,
-      "what": "page swipe, Tree -> Privacy"
+      "id": "cards_out_1",
+      "t": 7.5,
+      "what": "photo card 1 leaves the display plane (soft glass tick)",
+      "layer": "INTERFACE"
     },
     {
-      "id": "swipe_3",
+      "id": "cards_out_2",
+      "t": 8.125,
+      "what": "photo card 2",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "cards_out_3",
+      "t": 8.75,
+      "what": "photo card 3",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "cards_out_4",
+      "t": 9.375,
+      "what": "photo card 4",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "cards_out_5",
+      "t": 10.0,
+      "what": "photo card 5 + musical lift (bar 5)",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "cards_out_6",
+      "t": 10.625,
+      "what": "photo card 6",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "cards_in",
+      "t": 11.875,
+      "what": "cards glide back and fade, camera returns to the display (air)",
+      "layer": "WHOOSH"
+    },
+    {
+      "id": "swipe_privacy",
+      "t": 12.5,
+      "what": "page swipe The Tree -> Privacy",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "swipe_together",
+      "t": 15.0,
+      "what": "page swipe Privacy -> Together",
+      "layer": "INTERFACE"
+    },
+    {
+      "id": "push_post",
+      "t": 16.25,
+      "what": "slow push towards the feed post (air)",
+      "layer": "WHOOSH"
+    },
+    {
+      "id": "swipe_ready",
       "t": 20.0,
-      "what": "page swipe, Privacy -> Together"
+      "what": "page swipe Together -> Ready; pull-back begins",
+      "layer": "INTERFACE"
     },
     {
-      "id": "swipe_4",
-      "t": 22.8,
-      "what": "page swipe, Together -> Ready"
+      "id": "pullback",
+      "t": 20.0,
+      "what": "camera pulls back to the three-screen hero composition (air, 5 s)",
+      "layer": "WHOOSH"
     },
     {
-      "id": "pull_back",
-      "t": 22.0,
-      "what": "camera pulls back, light change to warm accent (22.0-25.0)"
+      "id": "dim_down",
+      "t": 25.0,
+      "what": "everything falls away into near-black: deep downbeat",
+      "layer": "IMPACTS"
     },
     {
-      "id": "text_1",
-      "t": 25.3,
-      "what": "first tagline line appears"
+      "id": "logo_hit",
+      "t": 26.25,
+      "what": "logo reveal on the musical climax (beat 3 of bar 11): one premium accent",
+      "layer": "LOGO"
     },
     {
-      "id": "text_2",
-      "t": 26.3,
-      "what": "second tagline line appears"
+      "id": "slogan_1",
+      "t": 26.9,
+      "what": "slogan line 1 'YOUR IMAGES.'",
+      "layer": "INTERFACE"
     },
     {
-      "id": "end_card",
-      "t": 28.0,
-      "what": "text dissolves, logo lockup + status line appear (logo lands ~28.4)"
-    },
-    {
-      "id": "logo_signature",
-      "t": 28.4,
-      "what": "logo audio signature, rings out to the end of the film"
+      "id": "slogan_2",
+      "t": 27.5,
+      "what": "slogan line 2 'YOUR WORLD.'",
+      "layer": "INTERFACE"
     },
     {
       "id": "end",
       "t": 30.0,
-      "what": "film ends; audio must have decayed naturally by here"
+      "what": "film ends; everything must have decayed naturally",
+      "layer": "MUSIC"
     }
   ],
   "audio": {
     "sample_rate": 48000,
     "channels": 2,
-    "target_lufs": -16.0,
-    "true_peak_dbtp": -1.5
+    "target_lufs": -14.0,
+    "tolerance_lu": 1.5,
+    "true_peak_dbtp": -1.0
+  },
+  "music": {
+    "bpm": 96,
+    "beat_s": 0.625,
+    "bar_s": 2.5,
+    "bars": 12,
+    "time_signature": "4/4",
+    "note": "12 bars x 2.5 s = 30.0 s exactly. Every scene change and the logo land on a beat."
+  },
+  "photo_cards": {
+    "files": [
+      "p3.jpg",
+      "p6.jpg",
+      "p8.jpg",
+      "p18.jpg",
+      "p17.jpg",
+      "p21.jpg"
+    ],
+    "source": "app/assets/tour in lacrydia-social (bundled demo photographs; provenance/licences are not documented in the repo)"
   }
 }

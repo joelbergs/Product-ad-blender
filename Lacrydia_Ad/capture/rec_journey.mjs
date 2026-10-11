@@ -1,0 +1,32 @@
+// Sequence A: tree overview -> fly into Travel -> Open -> branch page -> scroll -> photo viewer -> like. Deterministic 30 fps, dpr 3.
+import { enterTree } from './flow.mjs'; import { makeRecorder } from './bf_lib.mjs';
+import fs from 'node:fs';
+const OUT = process.argv[2] || 'seq/journey_a', DPR = +(process.argv[3] || 3);
+const ctx = await enterTree({ dpr: DPR, bf: true });
+const { browser, page, bf } = ctx;
+const ev = (expr) => bf.cdp.send('Runtime.evaluate', { expression: expr, returnByValue: true }).then((r) => r.result.value);
+const boxOf = (sel, text) => ev(`(()=>{const q=[...document.querySelectorAll(${JSON.stringify(sel)})].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.y>-5&&r.y<874&&(!${JSON.stringify(text||'')}||(e.innerText||'').trim()===${JSON.stringify(text||'')});});const e=q[0];if(!e)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,w:r.width,h:r.height};})()`);
+await page.waitForTimeout(1500);
+const travel = await boxOf('[aria-label^="Travel,"]'); console.log('travel', travel);
+await bf.stopPump?.();
+const R = await makeRecorder(bf);
+fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(OUT, { recursive: true });
+let n = 0; const marks = {}; const t0 = Date.now();
+const rec = async (k, label) => { if (label) marks[label] = n; for (let i = 0; i < k; i++) await R.frame(`${OUT}/f${String(n++).padStart(4, '0')}.jpg`); };
+await rec(24, 'tree_overview');
+marks.tap_travel = n; await R.tap(travel.x, travel.y); n += 3; await rec(66, 'flight');
+await rec(24, 'travel_card');
+const open = await boxOf('[aria-label="Open Travel"]') || await boxOf('[role=button]', 'Open'); console.log('open', open);
+marks.tap_open = n; await R.tap(open.x, open.y); n += 3; await rec(54, 'branch_page');
+await rec(12);
+await R.drag(300, 640, 300, 250, 40, async () => `${OUT}/f${String(n++).padStart(4, '0')}.jpg`); marks.scrolled = n;
+await rec(18);
+const ph = await boxOf('[aria-label^="Photo,"]'); console.log('photo', ph);
+marks.tap_photo = n; await R.tap(ph.x, ph.y); n += 3; await rec(45, 'viewer');
+await rec(24);
+const like = await boxOf('[aria-label="Like"]'); console.log('like', like);
+if (like) { marks.tap_like = n; await R.tap(like.x, like.y); n += 3; await rec(30, 'liked'); }
+await rec(24, 'end');
+fs.writeFileSync(`${OUT}/marks.json`, JSON.stringify({ fps: 30, dpr: DPR, frames: n, marks }, null, 1));
+console.log(`${n} frames in ${((Date.now() - t0) / 1000).toFixed(1)} s`, JSON.stringify(marks));
+await browser.close();

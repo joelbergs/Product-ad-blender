@@ -1,0 +1,10 @@
+import { enterTree } from './flow.mjs'; import { shot, hideLogBox } from './capture_lib.mjs';
+const { browser, page } = await enterTree({ dpr: 1 });
+const labels = async () => page.evaluate(() => [...new Set([...document.querySelectorAll('[aria-label],[role=button]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.y < 874 && r.y > -10; }).map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/\n/g, ' ').slice(0, 44)).filter(Boolean))].slice(0, 36));
+const step = async (name, fn, wait = 3500) => { try { await fn(); } catch (e) { console.log('  step failed:', String(e).split('\n')[0].slice(0, 90)); } await page.waitForTimeout(wait); await hideLogBox(page); await shot(page, name); console.log(name, page.url().replace('http://localhost:8099', ''), '\n   ', JSON.stringify(await labels())); };
+await step('f01_travel', () => page.locator('[aria-label^="Travel,"]').first().click({ force: true }), 4500);
+await step('f02_open', () => page.getByText('Open', { exact: true }).first().click({ force: true }));
+await step('f03_photo', () => page.locator('[aria-label^="Photo,"]').first().click({ force: true }), 4000);
+await step('f04_photo_swipe', async () => { await page.mouse.move(300, 450); await page.mouse.down(); await page.mouse.move(60, 450, { steps: 8 }); await page.mouse.up(); });
+await step('f05_tap_photo', () => page.mouse.click(200, 400));
+await browser.close();
