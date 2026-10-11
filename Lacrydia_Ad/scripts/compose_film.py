@@ -236,12 +236,12 @@ def logo_mark(h_px, color=(255, 255, 255)):
 # device side per scene (+1 device left of centre / text right, -1 device right / text left)
 def cam_state(t):
     """(azimuth deg, elevation deg, distance cm, target x, target z, roll deg). Alternating sides, swinging orbit, push-ins."""
-    az = curve([(0, 0), (10.0, 0), (11.4, -14), (13.2, -6), (14.0, 15), (15.4, 21), (16.0, -15), (17.1, -20), (17.6, 12), (18.9, 16), (19.6, -14), (20.8, -18), (21.8, 12), (22.5, 4), (25, 14), (30, 14)])
-    el = curve([(0, 0), (10.0, 0), (11.6, 4), (13.4, -3), (15.0, 5), (16.5, -4), (18.0, 4), (19.6, -3), (21.2, 5), (22.5, 3), (25, 9), (30, 9)])
+    az = curve([(0, 0), (10.35, 0), (11.6, -14), (13.2, -6), (14.0, 15), (15.4, 21), (16.0, -15), (17.1, -20), (17.6, 12), (18.9, 16), (19.6, -14), (20.8, -18), (21.8, 12), (22.5, 4), (25, 14), (30, 14)])
+    el = curve([(0, 0), (10.35, 0), (11.7, 4), (13.4, -3), (15.0, 5), (16.5, -4), (18.0, 4), (19.6, -3), (21.2, 5), (22.5, 3), (25, 9), (30, 9)])
     dist = curve([(0, 66), (10.0, 66), (11.6, 68), (13.2, 70), (14.8, 68), (16.4, 70), (18.0, 68), (19.8, 70), (21.4, 68), (22.4, 72), (23.4, 88), (25, 116), (30, 124)])
-    tx = curve([(0, 0), (10.0, 0), (11.0, -4.6), (13.0, -4.6), (13.9, 4.6), (15.4, 4.6), (16.2, -4.6), (17.0, -4.6), (17.6, 4.6), (18.7, 4.6), (19.2, -4.6), (20.2, -4.6), (20.9, 4.6), (22.0, 4.6), (22.9, 0.0), (30, 0)])
+    tx = curve([(0, 0), (10.35, 0), (11.3, -4.6), (13.0, -4.6), (13.9, 4.6), (15.4, 4.6), (16.2, -4.6), (17.0, -4.6), (17.6, 4.6), (18.7, 4.6), (19.2, -4.6), (20.2, -4.6), (20.9, 4.6), (22.0, 4.6), (22.9, 0.0), (30, 0)])
     tz = curve([(0, 0), (10.0, 0), (12, 0.6), (17, -0.4), (22, 0.0), (25, -0.6), (30, -0.6)])
-    ro = curve([(0, 0), (10.0, 0), (11.4, -2.5), (13.3, 1.5), (14.8, 3.0), (16.0, -2.5), (17.4, 2.0), (19.0, 2.5), (20.0, -2.0), (21.6, 2.0), (22.8, 0.0), (30, 0)])
+    ro = curve([(0, 0), (10.35, 0), (11.6, -2.5), (13.3, 1.5), (14.8, 3.0), (16.0, -2.5), (17.4, 2.0), (19.0, 2.5), (20.0, -2.0), (21.6, 2.0), (22.8, 0.0), (30, 0)])
     return az(t), el(t), dist(t), tx(t), tz(t), ro(t)
 
 def make_cam(t):
@@ -273,7 +273,13 @@ def _flow(n0, n1):
         A, B = load_rgb(os.path.join(HERO_DIR, f"f{n0:04d}.png")), load_rgb(os.path.join(HERO_DIR, f"f{n1:04d}.png"))
         sm = lambda im: cv2.cvtColor(cv2.resize((np.clip(im, 0, 1) ** 0.55 * 255).astype(np.uint8), (im.shape[1] // 2, im.shape[0] // 2), interpolation=cv2.INTER_AREA), cv2.COLOR_RGB2GRAY)
         ga, gb = sm(A), sm(B)
-        _flow_cache[key] = (_dis.calc(ga, gb, None), _dis.calc(gb, ga, None))
+        fab, fba = _dis.calc(ga, gb, None), _dis.calc(gb, ga, None)
+        h2, w2 = fab.shape[:2]
+        gx, gy = np.meshgrid(np.arange(w2, dtype=np.float32), np.arange(h2, dtype=np.float32))
+        back = cv2.remap(fba, gx + fab[..., 0], gy + fab[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+        err = np.linalg.norm(fab + back, axis=2)                      # forward-backward consistency: large where the flow is unreliable
+        conf = np.exp(-(cv2.GaussianBlur(err, (0, 0), 2.0) / 1.2) ** 2).astype(np.float32)
+        _flow_cache[key] = (fab, fba, conf)
     return _flow_cache[key]
 
 def _warp(img, flow, k):
@@ -293,8 +299,10 @@ def hero_frame(t):
     else:
         n1 = _hero_ids[j + 1]; k = (f - n0) / (n1 - n0)
         A, B = load_rgb(os.path.join(HERO_DIR, f"f{n0:04d}.png")), load_rgb(os.path.join(HERO_DIR, f"f{n1:04d}.png"))
-        fab, fba = _flow(n0, n1)
-        out = _warp(A, fba, k) * (1 - k) + _warp(B, fab, 1 - k) * k       # each frame is pulled towards the time between them
+        fab, fba, conf = _flow(n0, n1)
+        warped = _warp(A, fba, k) * (1 - k) + _warp(B, fab, 1 - k) * k    # each frame is pulled towards the time between them
+        cf = cv2.resize(conf, (A.shape[1], A.shape[0]), interpolation=cv2.INTER_LINEAR)[..., None]
+        out = warped * cf + (A * (1 - k) + B * k) * (1 - cf)              # plain cross-fade wherever the flow cannot be trusted
     return cv2.resize(out, (W, H), interpolation=cv2.INTER_AREA if out.shape[1] > W else cv2.INTER_CUBIC)
 
 def screen_for(t, which="main"):
@@ -308,8 +316,8 @@ def render_frame(i):
     t = i / FPS
     canvas = np.zeros((H, W, 3), np.float32)
     # 0 - 7.5 s: the 3D hero is the picture
-    plate_a = 1.0 - seg(t, HERO_END, HERO_END + 0.65)
-    hero = hero_frame(min(t, HERO_END)) if t < HERO_END + 0.7 else None
+    plate_a = 1.0 - seg(t, HERO_END, HERO_END + 0.3)
+    hero = hero_frame(min(t, HERO_END)) if t < HERO_END + 0.35 else None
     cam = make_cam(t)
     canvas[:] = background(t)
     if hero is not None: canvas = canvas * (1 - plate_a) + hero * plate_a
