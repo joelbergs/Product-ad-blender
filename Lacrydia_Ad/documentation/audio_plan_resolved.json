@@ -35,19 +35,19 @@
     1.1481536214968828
    ],
    [
-    145.0,
+    244.0,
     1.1481536214968828
    ],
    [
-    157.0,
+    256.0,
     0.9660508789898135
    ],
    [
-    181.0,
+    280.0,
     0.9660508789898135
    ],
    [
-    211.0,
+    310.0,
     1.1481536214968828
    ],
    [
@@ -260,54 +260,54 @@
   "layer": "IMPACTS",
   "file": "assets/audio/sfx/impact_screen_wake_sub.wav",
   "event": "screen_wake",
-  "t_event": 5.0,
+  "t_event": 8.3,
   "anchor_frames": 0,
-  "start_frame": 151,
+  "start_frame": 250,
   "dur_frames": 78,
-  "end_frame": 229,
-  "t_start": 5.0,
+  "end_frame": 328,
+  "t_start": 8.3,
   "vol_db": -13.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.4,
   "keys": [
    [
-    151.0,
+    250.0,
     0.2041737944669529
    ],
    [
-    217.0,
+    316.0,
     0.2041737944669529
    ],
    [
-    218.5,
+    317.5,
     0.19640289212506845
    ],
    [
-    220.0,
+    319.0,
     0.17427323453756186
    ],
    [
-    221.5,
+    320.5,
     0.14115386146628542
    ],
    [
-    223.0,
+    322.0,
     0.10208689723347643
    ],
    [
-    224.5,
+    323.5,
     0.0630199330006675
    ],
    [
-    226.0,
+    325.0,
     0.029900559929391057
    ],
    [
-    227.5,
+    326.5,
     0.007770902341884454
    ],
    [
-    229.0,
+    328.0,
     0.0
    ]
   ],
@@ -316,8 +316,8 @@
   "channel_rel": 4,
   "strip_name": "IMPACTS_screen_wake",
   "channel": 4,
-  "blender_frame_start": 151,
-  "blender_frame_end": 229
+  "blender_frame_start": 250,
+  "blender_frame_end": 328
  },
  {
   "name": "IMPACTS_pull_back",
@@ -388,86 +388,86 @@
   "layer": "WHOOSH",
   "file": "assets/audio/sfx/whoosh_rotate_01.wav",
   "event": "rotate_whoosh_1",
-  "t_event": 3.6,
+  "t_event": 7.7,
   "anchor_frames": 0,
-  "start_frame": 109,
+  "start_frame": 232,
   "dur_frames": 93,
-  "end_frame": 202,
-  "t_start": 3.6,
+  "end_frame": 325,
+  "t_start": 7.7,
   "vol_db": -9.8,
   "fade_in_s": 0.03,
   "fade_out_s": 0.3,
   "keys": [
    [
-    109.0,
+    232.0,
     0.0
    ],
    [
-    109.1125,
-    0.012316050220932184
+    232.1125,
+    0.012316050220935258
    ],
    [
-    109.225,
+    232.225,
     0.04738919388286517
    ],
    [
-    109.3375,
+    232.3375,
     0.09987986280211636
    ],
    [
-    109.45,
-    0.16179682846481577
+    232.45,
+    0.16179682846480772
    ],
    [
-    109.5625,
+    232.5625,
     0.22371379412751488
    ],
    [
-    109.675,
-    0.27620446304675966
+    232.675,
+    0.2762044630467653
    ],
    [
-    109.7875,
+    232.7875,
     0.3112776067086942
    ],
    [
-    109.9,
+    232.9,
     0.3235936569296282
    ],
    [
-    193.0,
+    316.0,
     0.3235936569296282
    ],
    [
-    194.125,
+    317.125,
     0.3112776067086954
    ],
    [
-    195.25,
+    318.25,
     0.2762044630467608
    ],
    [
-    196.375,
+    319.375,
     0.22371379412751483
    ],
    [
-    197.5,
+    320.5,
     0.16179682846481408
    ],
    [
-    198.625,
+    321.625,
     0.09987986280211338
    ],
    [
-    199.75,
+    322.75,
     0.047389193882867435
    ],
    [
-    200.875,
+    323.875,
     0.012316050220932795
    ],
    [
-    202.0,
+    325.0,
     0.0
    ]
   ],
@@ -476,104 +476,104 @@
   "channel_rel": 5,
   "strip_name": "WHOOSH_rotate_1",
   "channel": 5,
-  "blender_frame_start": 109,
-  "blender_frame_end": 202
+  "blender_frame_start": 232,
+  "blender_frame_end": 325
  },
  {
   "name": "WHOOSH_macro_cut_air",
   "layer": "WHOOSH",
   "file": "assets/audio/sfx/whoosh_macro_air_01.wav",
   "event": "macro_air",
-  "t_event": 2.0,
+  "t_event": 5.5,
   "anchor_frames": 0,
-  "start_frame": 61,
+  "start_frame": 166,
   "dur_frames": 42,
-  "end_frame": 103,
-  "t_start": 2.0,
+  "end_frame": 208,
+  "t_start": 5.5,
   "vol_db": -9.8,
   "fade_in_s": 0.03,
   "fade_out_s": 0.3,
   "keys": [
    [
-    61.0,
+    166.0,
     0.0
    ],
    [
-    61.1125,
-    0.012316050220932184
+    166.1125,
+    0.012316050220935258
    ],
    [
-    61.225,
-    0.04738919388286801
+    166.225,
+    0.04738919388286517
    ],
    [
-    61.3375,
-    0.09987986280211265
+    166.3375,
+    0.09987986280211636
    ],
    [
-    61.45,
-    0.16179682846481577
+    166.45,
+    0.16179682846480772
    ],
    [
-    61.5625,
+    166.5625,
     0.22371379412751488
    ],
    [
-    61.675,
-    0.27620446304675966
+    166.675,
+    0.2762044630467653
    ],
    [
-    61.7875,
-    0.31127760670869575
+    166.7875,
+    0.3112776067086942
    ],
    [
-    61.9,
+    166.9,
     0.3235936569296282
    ],
    [
-    94.0,
+    199.0,
     0.3235936569296282
    ],
    [
-    95.125,
+    200.125,
     0.3112776067086954
    ],
    [
-    96.25,
+    201.25,
     0.2762044630467608
    ],
    [
-    97.375,
+    202.375,
     0.22371379412751483
    ],
    [
-    98.5,
+    203.5,
     0.16179682846481408
    ],
    [
-    99.625,
+    204.625,
     0.09987986280211338
    ],
    [
-    100.75,
+    205.75,
     0.047389193882867435
    ],
    [
-    101.875,
+    206.875,
     0.012316050220932795
    ],
    [
-    103.0,
+    208.0,
     0.0
    ]
   ],
-  "lane": 1,
-  "lane_index": 1,
-  "channel_rel": 6,
+  "lane": 0,
+  "lane_index": 0,
+  "channel_rel": 5,
   "strip_name": "WHOOSH_macro_cut_air",
-  "channel": 6,
-  "blender_frame_start": 61,
-  "blender_frame_end": 103
+  "channel": 5,
+  "blender_frame_start": 166,
+  "blender_frame_end": 208
  },
  {
   "name": "WHOOSH_light_sweep",
@@ -676,86 +676,86 @@
   "layer": "WHOOSH",
   "file": "assets/audio/sfx/whoosh_turn_02.wav",
   "event": "turn_whoosh_2",
-  "t_event": 4.9,
+  "t_event": 8.6,
   "anchor_frames": 0,
-  "start_frame": 148,
+  "start_frame": 259,
   "dur_frames": 90,
-  "end_frame": 238,
-  "t_start": 4.9,
+  "end_frame": 349,
+  "t_start": 8.6,
   "vol_db": -7.8,
   "fade_in_s": 0.03,
   "fade_out_s": 0.3,
   "keys": [
    [
-    148.0,
+    259.0,
     0.0
    ],
    [
-    148.1125,
+    259.1125,
     0.015504988596068565
    ],
    [
-    148.225,
-    0.059659460423579676
+    259.225,
+    0.05965946042359397
    ],
    [
-    148.3375,
-    0.12574129740809928
+    259.3375,
+    0.1257412974080806
    ],
    [
-    148.45,
+    259.45,
     0.20369013890204835
    ],
    [
-    148.5625,
+    259.5625,
     0.28163898039601726
    ],
    [
-    148.675,
+    259.675,
     0.34772081738053595
    ],
    [
-    148.7875,
-    0.3918752892080457
+    259.7875,
+    0.3918752892080535
    ],
    [
-    148.9,
+    259.9,
     0.40738027780411273
    ],
    [
-    229.0,
+    340.0,
     0.40738027780411273
    ],
    [
-    230.125,
+    341.125,
     0.39187528920804726
    ],
    [
-    231.25,
+    342.25,
     0.3477208173805302
    ],
    [
-    232.375,
+    343.375,
     0.2816389803960172
    ],
    [
-    233.5,
+    344.5,
     0.2036901389020563
    ],
    [
-    234.625,
+    345.625,
     0.12574129740809553
    ],
    [
-    235.75,
+    346.75,
     0.05965946042358253
    ],
    [
-    236.875,
+    347.875,
     0.015504988596065465
    ],
    [
-    238.0,
+    349.0,
     0.0
    ]
   ],
@@ -764,104 +764,104 @@
   "channel_rel": 6,
   "strip_name": "WHOOSH_turn_2",
   "channel": 6,
-  "blender_frame_start": 148,
-  "blender_frame_end": 238
+  "blender_frame_start": 259,
+  "blender_frame_end": 349
  },
  {
   "name": "WHOOSH_push_in",
   "layer": "WHOOSH",
   "file": "assets/audio/sfx/whoosh_push_in_01.wav",
   "event": "push_in",
-  "t_event": 7.5,
+  "t_event": 9.7,
   "anchor_frames": 0,
-  "start_frame": 226,
+  "start_frame": 292,
   "dur_frames": 120,
-  "end_frame": 346,
-  "t_start": 7.5,
+  "end_frame": 412,
+  "t_start": 9.7,
   "vol_db": -6.8,
   "fade_in_s": 0.03,
   "fade_out_s": 0.4,
   "keys": [
    [
-    226.0,
+    292.0,
     0.0
    ],
    [
-    226.1125,
+    292.1125,
     0.017396883338530424
    ],
    [
-    226.225,
-    0.06693901556895404
+    292.225,
+    0.06693901556897007
    ],
    [
-    226.3375,
-    0.14108405615975905
+    292.3375,
+    0.1410840561597381
    ],
    [
-    226.45,
+    292.45,
     0.22854409480742852
    ],
    [
-    226.5625,
+    292.5625,
     0.3160041334551203
    ],
    [
-    226.675,
+    292.675,
     0.39014917404592425
    ],
    [
-    226.7875,
-    0.4396913062763464
+    292.7875,
+    0.43969130627635505
    ],
    [
-    226.9,
+    292.9,
     0.4570881896148751
    ],
    [
-    334.0,
+    400.0,
     0.4570881896148751
    ],
    [
-    335.5,
+    401.5,
     0.4396913062763481
    ],
    [
-    337.0,
+    403.0,
     0.3901491740459178
    ],
    [
-    338.5,
+    404.5,
     0.31600413345512024
    ],
    [
-    340.0,
+    406.0,
     0.22854409480743748
    ],
    [
-    341.5,
+    407.5,
     0.14108405615975483
    ],
    [
-    343.0,
+    409.0,
     0.06693901556895723
    ],
    [
-    344.5,
+    410.5,
     0.017396883338526944
    ],
    [
-    346.0,
+    412.0,
     0.0
    ]
   ],
-  "lane": 0,
-  "lane_index": 0,
-  "channel_rel": 5,
+  "lane": 2,
+  "lane_index": 2,
+  "channel_rel": 7,
   "strip_name": "WHOOSH_push_in",
-  "channel": 5,
-  "blender_frame_start": 226,
-  "blender_frame_end": 346
+  "channel": 7,
+  "blender_frame_start": 292,
+  "blender_frame_end": 412
  },
  {
   "name": "WHOOSH_pull_back",
@@ -1017,9 +1017,9 @@
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 7,
+  "channel_rel": 8,
   "strip_name": "MATERIAL_first_light",
-  "channel": 7,
+  "channel": 8,
   "blender_frame_start": 28,
   "blender_frame_end": 124
  },
@@ -1028,512 +1028,512 @@
   "layer": "MATERIAL",
   "file": "assets/audio/sfx/material_lens_glint.wav",
   "event": "lens_glint",
-  "t_event": 1.8,
+  "t_event": 3.0,
   "anchor_frames": 0,
-  "start_frame": 55,
+  "start_frame": 91,
   "dur_frames": 90,
-  "end_frame": 145,
-  "t_start": 1.8,
+  "end_frame": 181,
+  "t_start": 3.0,
   "vol_db": -9.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.4,
   "keys": [
    [
-    55.0,
+    91.0,
     0.3235936569296282
    ],
    [
-    133.0,
+    169.0,
     0.3235936569296282
    ],
    [
-    134.5,
+    170.5,
     0.3112776067086954
    ],
    [
-    136.0,
+    172.0,
     0.2762044630467608
    ],
    [
-    137.5,
+    173.5,
     0.22371379412751483
    ],
    [
-    139.0,
+    175.0,
     0.16179682846481408
    ],
    [
-    140.5,
+    176.5,
     0.09987986280211338
    ],
    [
-    142.0,
+    178.0,
     0.047389193882867435
    ],
    [
-    143.5,
+    179.5,
     0.012316050220932795
    ],
    [
-    145.0,
+    181.0,
     0.0
    ]
   ],
   "lane": 1,
   "lane_index": 1,
-  "channel_rel": 8,
+  "channel_rel": 9,
   "strip_name": "MATERIAL_lens_glint",
-  "channel": 8,
-  "blender_frame_start": 55,
-  "blender_frame_end": 145
+  "channel": 9,
+  "blender_frame_start": 91,
+  "blender_frame_end": 181
  },
  {
   "name": "INTERFACE_screen_wake",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_screen_wake.wav",
   "event": "screen_wake",
-  "t_event": 5.0,
+  "t_event": 8.3,
   "anchor_frames": 0,
-  "start_frame": 151,
+  "start_frame": 250,
   "dur_frames": 72,
-  "end_frame": 223,
-  "t_start": 5.0,
+  "end_frame": 322,
+  "t_start": 8.3,
   "vol_db": -6.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.4,
   "keys": [
    [
-    151.0,
+    250.0,
     0.4570881896148751
    ],
    [
-    211.0,
+    310.0,
     0.4570881896148751
    ],
    [
-    212.5,
+    311.5,
     0.4396913062763481
    ],
    [
-    214.0,
+    313.0,
     0.3901491740459178
    ],
    [
-    215.5,
+    314.5,
     0.31600413345512024
    ],
    [
-    217.0,
+    316.0,
     0.22854409480743748
    ],
    [
-    218.5,
+    317.5,
     0.14108405615975483
    ],
    [
-    220.0,
+    319.0,
     0.06693901556895723
    ],
    [
-    221.5,
+    320.5,
     0.017396883338526944
    ],
    [
-    223.0,
+    322.0,
     0.0
    ]
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 9,
+  "channel_rel": 10,
   "strip_name": "INTERFACE_screen_wake",
-  "channel": 9,
-  "blender_frame_start": 151,
-  "blender_frame_end": 223
+  "channel": 10,
+  "blender_frame_start": 250,
+  "blender_frame_end": 322
  },
  {
   "name": "INTERFACE_swipe_1",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_swipe_01.wav",
   "event": "swipe_1",
-  "t_event": 8.3,
+  "t_event": 10.5,
   "anchor_frames": 0,
-  "start_frame": 250,
+  "start_frame": 316,
   "dur_frames": 30,
-  "end_frame": 280,
-  "t_start": 8.3,
+  "end_frame": 346,
+  "t_start": 10.5,
   "vol_db": -4.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.15,
   "keys": [
    [
-    250.0,
+    316.0,
     0.5754399373371569
    ],
    [
-    275.5,
+    341.5,
     0.5754399373371569
    ],
    [
-    276.0625,
+    342.0625,
     0.5535385588162668
    ],
    [
-    276.625,
+    342.625,
     0.4911687095969113
    ],
    [
-    277.1875,
+    343.1875,
     0.39782563383864616
    ],
    [
-    277.75,
+    343.75,
     0.2877199686685784
    ],
    [
-    278.3125,
+    344.3125,
     0.17761430349851076
    ],
    [
-    278.875,
+    344.875,
     0.08427122774024565
    ],
    [
-    279.4375,
+    345.4375,
     0.02190137852089012
    ],
    [
-    280.0,
+    346.0,
     0.0
    ]
   ],
-  "lane": 0,
-  "lane_index": 0,
-  "channel_rel": 9,
+  "lane": 1,
+  "lane_index": 1,
+  "channel_rel": 11,
   "strip_name": "INTERFACE_swipe_1",
-  "channel": 9,
-  "blender_frame_start": 250,
-  "blender_frame_end": 280
+  "channel": 11,
+  "blender_frame_start": 316,
+  "blender_frame_end": 346
  },
  {
   "name": "INTERFACE_swipe_2",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_swipe_02.wav",
   "event": "swipe_2",
-  "t_event": 11.7,
+  "t_event": 13.1,
   "anchor_frames": 0,
-  "start_frame": 352,
+  "start_frame": 394,
   "dur_frames": 30,
-  "end_frame": 382,
-  "t_start": 11.7,
+  "end_frame": 424,
+  "t_start": 13.1,
   "vol_db": -6.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.15,
   "keys": [
    [
-    352.0,
+    394.0,
     0.4570881896148751
    ],
    [
-    377.5,
+    419.5,
     0.4570881896148751
    ],
    [
-    378.0625,
+    420.0625,
     0.4396913062763481
    ],
    [
-    378.625,
+    420.625,
     0.3901491740459178
    ],
    [
-    379.1875,
+    421.1875,
     0.31600413345512024
    ],
    [
-    379.75,
+    421.75,
     0.22854409480743748
    ],
    [
-    380.3125,
+    422.3125,
     0.14108405615975483
    ],
    [
-    380.875,
+    422.875,
     0.06693901556895723
    ],
    [
-    381.4375,
+    423.4375,
     0.017396883338526944
    ],
    [
-    382.0,
+    424.0,
     0.0
    ]
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 9,
+  "channel_rel": 10,
   "strip_name": "INTERFACE_swipe_2",
-  "channel": 9,
-  "blender_frame_start": 352,
-  "blender_frame_end": 382
+  "channel": 10,
+  "blender_frame_start": 394,
+  "blender_frame_end": 424
  },
  {
   "name": "INTERFACE_swipe_3",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_swipe_03.wav",
   "event": "swipe_3",
-  "t_event": 15.0,
+  "t_event": 15.6,
   "anchor_frames": 0,
-  "start_frame": 451,
+  "start_frame": 469,
   "dur_frames": 30,
-  "end_frame": 481,
-  "t_start": 15.0,
+  "end_frame": 499,
+  "t_start": 15.6,
   "vol_db": -4.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.15,
   "keys": [
    [
-    451.0,
+    469.0,
     0.5754399373371569
    ],
    [
-    476.5,
+    494.5,
     0.5754399373371569
    ],
    [
-    477.0625,
+    495.0625,
     0.5535385588162668
    ],
    [
-    477.625,
+    495.625,
     0.4911687095969113
    ],
    [
-    478.1875,
+    496.1875,
     0.39782563383864616
    ],
    [
-    478.75,
+    496.75,
     0.2877199686685784
    ],
    [
-    479.3125,
+    497.3125,
     0.17761430349851076
    ],
    [
-    479.875,
+    497.875,
     0.08427122774024565
    ],
    [
-    480.4375,
+    498.4375,
     0.02190137852089012
    ],
    [
-    481.0,
+    499.0,
     0.0
    ]
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 9,
+  "channel_rel": 10,
   "strip_name": "INTERFACE_swipe_3",
-  "channel": 9,
-  "blender_frame_start": 451,
-  "blender_frame_end": 481
+  "channel": 10,
+  "blender_frame_start": 469,
+  "blender_frame_end": 499
  },
  {
   "name": "INTERFACE_swipe_4",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_swipe_04.wav",
   "event": "swipe_4",
-  "t_event": 19.8,
+  "t_event": 18.6,
   "anchor_frames": 0,
-  "start_frame": 595,
+  "start_frame": 559,
   "dur_frames": 30,
-  "end_frame": 625,
-  "t_start": 19.8,
+  "end_frame": 589,
+  "t_start": 18.6,
   "vol_db": -3.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.15,
   "keys": [
    [
-    595.0,
+    559.0,
     0.6456542290346555
    ],
    [
-    620.5,
+    584.5,
     0.6456542290346555
    ],
    [
-    621.0625,
+    585.0625,
     0.6210804781595641
    ],
    [
-    621.625,
+    585.625,
     0.5511003563434164
    ],
    [
-    622.1875,
+    586.1875,
     0.4463677027613367
    ],
    [
-    622.75,
+    586.75,
     0.3228271145173277
    ],
    [
-    623.3125,
+    587.3125,
     0.19928652627331886
    ],
    [
-    623.875,
+    587.875,
     0.09455387269123916
    ],
    [
-    624.4375,
+    588.4375,
     0.024573750875091352
    ],
    [
-    625.0,
+    589.0,
     0.0
    ]
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 9,
+  "channel_rel": 10,
   "strip_name": "INTERFACE_swipe_4",
-  "channel": 9,
-  "blender_frame_start": 595,
-  "blender_frame_end": 625
+  "channel": 10,
+  "blender_frame_start": 559,
+  "blender_frame_end": 589
  },
  {
   "name": "INTERFACE_swipe_5",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_swipe_02.wav",
   "event": "swipe_5",
-  "t_event": 17.6,
+  "t_event": 17.0,
   "anchor_frames": 0,
-  "start_frame": 529,
+  "start_frame": 511,
   "dur_frames": 30,
-  "end_frame": 559,
-  "t_start": 17.6,
+  "end_frame": 541,
+  "t_start": 17.0,
   "vol_db": -7.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.15,
   "keys": [
    [
-    529.0,
+    511.0,
     0.40738027780411273
    ],
    [
-    554.5,
+    536.5,
     0.40738027780411273
    ],
    [
-    555.0625,
+    537.0625,
     0.39187528920804726
    ],
    [
-    555.625,
+    537.625,
     0.3477208173805302
    ],
    [
-    556.1875,
+    538.1875,
     0.2816389803960172
    ],
    [
-    556.75,
+    538.75,
     0.2036901389020563
    ],
    [
-    557.3125,
+    539.3125,
     0.12574129740809553
    ],
    [
-    557.875,
+    539.875,
     0.05965946042358253
    ],
    [
-    558.4375,
+    540.4375,
     0.015504988596065465
    ],
    [
-    559.0,
+    541.0,
     0.0
    ]
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 9,
+  "channel_rel": 10,
   "strip_name": "INTERFACE_swipe_5",
-  "channel": 9,
-  "blender_frame_start": 529,
-  "blender_frame_end": 559
+  "channel": 10,
+  "blender_frame_start": 511,
+  "blender_frame_end": 541
  },
  {
   "name": "INTERFACE_swipe_6",
   "layer": "INTERFACE",
   "file": "assets/audio/sfx/ui_swipe_03.wav",
   "event": "swipe_6",
-  "t_event": 21.5,
+  "t_event": 20.0,
   "anchor_frames": 0,
-  "start_frame": 646,
+  "start_frame": 601,
   "dur_frames": 30,
-  "end_frame": 676,
-  "t_start": 21.5,
+  "end_frame": 631,
+  "t_start": 20.0,
   "vol_db": -7.8,
   "fade_in_s": 0.0,
   "fade_out_s": 0.15,
   "keys": [
    [
-    646.0,
+    601.0,
     0.40738027780411273
    ],
    [
-    671.5,
+    626.5,
     0.40738027780411273
    ],
    [
-    672.0625,
+    627.0625,
     0.39187528920804726
    ],
    [
-    672.625,
+    627.625,
     0.3477208173805302
    ],
    [
-    673.1875,
+    628.1875,
     0.2816389803960172
    ],
    [
-    673.75,
+    628.75,
     0.2036901389020563
    ],
    [
-    674.3125,
+    629.3125,
     0.12574129740809553
    ],
    [
-    674.875,
+    629.875,
     0.05965946042358253
    ],
    [
-    675.4375,
+    630.4375,
     0.015504988596065465
    ],
    [
-    676.0,
+    631.0,
     0.0
    ]
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 9,
+  "channel_rel": 10,
   "strip_name": "INTERFACE_swipe_6",
-  "channel": 9,
-  "blender_frame_start": 646,
-  "blender_frame_end": 676
+  "channel": 10,
+  "blender_frame_start": 601,
+  "blender_frame_end": 631
  },
  {
   "name": "LOGO_signature",
@@ -1561,9 +1561,9 @@
   ],
   "lane": 0,
   "lane_index": 0,
-  "channel_rel": 10,
+  "channel_rel": 12,
   "strip_name": "LOGO_signature",
-  "channel": 10,
+  "channel": 12,
   "blender_frame_start": 777,
   "blender_frame_end": 837
  }

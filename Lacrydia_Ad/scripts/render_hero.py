@@ -15,6 +15,7 @@ ap.add_argument("--profile", default="review")
 ap.add_argument("--out", required=True)
 ap.add_argument("--step", type=int, default=1)
 ap.add_argument("--times", default=None)
+ap.add_argument("--plan", default=None, help="t0-t1:step,... e.g. 0-7.5:3,7.5-10:2 (frame step per time range)")
 ap.add_argument("--samples", type=int, default=None)
 ap.add_argument("--device", default="CPU")
 ap.add_argument("--handoff-only", action="store_true")
@@ -50,9 +51,16 @@ if a.times:
     frames = sorted({T.t_to_frame(float(x)) for x in a.times.split(",")})
 else:
     last = T.t_to_frame(T.HERO_END)
-    frames = list(range(1, last + 1, a.step))
-    if frames[-1] != last:
-        frames.append(last)
+    if a.plan:
+        fs_ = set()
+        for part in a.plan.split(","):
+            rng_, st_ = part.split(":"); t0_, t1_ = [float(x) for x in rng_.split("-")]
+            fs_.update(range(T.t_to_frame(t0_), T.t_to_frame(t1_) + (1 if t1_ >= T.HERO_END else 0), int(st_)))
+        frames = sorted(fs_ | {last})
+    else:
+        frames = list(range(1, last + 1, a.step))
+        if frames[-1] != last:
+            frames.append(last)
 if a.part:
     i, n = map(int, a.part.split("/")); frames = frames[i::n]
 win = sorted({f + d for f in frames for d in (-1, 0, 1) if 1 <= f + d <= T.N_FRAMES})

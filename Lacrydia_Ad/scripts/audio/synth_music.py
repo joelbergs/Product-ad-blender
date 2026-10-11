@@ -25,8 +25,8 @@ E = events()
 
 # ------------------------------------------------------------------ brightness (pad low-pass cutoff in Hz) over the film
 def brightness():
-    return cfn([(0, 600), (2.5, 750), (3.75, 950), (5.0, 1100), (6.4, 3300),             # the lift when the screen wakes
-                (7.5, 3000), (12.5, 2800), (22.4, 2800), (23.7, 3800),                     # warm accent opens up at the pull-back
+    return cfn([(0, 600), (2.5, 750), (5.0, 1100), (7.4, 1500), (8.6, 3300),             # the lift when the display wakes
+                (10.0, 3000), (12.5, 2800), (22.4, 2800), (23.7, 3800),                     # warm accent opens up at the pull-back
                 (25.0, 3000), (25.625, 2100), (26.25, 3600), (27.25, 2300), (DUR + TAIL, 1500)])
 
 
@@ -123,10 +123,10 @@ def chords():
     """(name, t_on, t_off, midi notes, amp_db per note). One chord change per bar or two (bar = 2.5 s); logo on bar 11 beat 3."""
     e = E
     return [
-        ("D drone",       1.0,                 3.6,                  [38 + 12, 45 + 12, 50 + 12], -19.0),
-        ("Dsus2",         2.5,                 3.75,                 [50, 57, 64, 69, 74],        -18.0),
-        ("Bm11",          3.75,                5.0,                  [47, 54, 57, 62, 64],        -17.5),
-        ("Dadd9 (wake)",  e["screen_wake"],    7.5,                  [50, 57, 62, 64, 66, 69],     -8.5),
+        ("D drone",       1.0,                 3.0,                  [38 + 12, 45 + 12, 50 + 12], -19.0),
+        ("Dsus2",         2.5,                 5.0,                  [50, 57, 64, 69, 74],        -17.5),
+        ("Bm11",          5.0,                 7.5,                  [47, 54, 57, 62, 64],        -15.5),
+        ("Dadd9 (turn)",  7.5,                 10.0,                 [50, 57, 62, 64, 66, 69],     -9.5),
         ("Bm9",           7.5,                 10.0,                 [47, 54, 57, 61, 62, 66],     -9.0),
         ("Gmaj9",         10.0,                12.5,                 [43, 50, 59, 62, 66, 69],     -9.0),
         ("Dmaj9",         12.5,                15.0,                 [50, 54, 57, 61, 64, 69],     -8.5),
@@ -140,7 +140,7 @@ def chords():
     ]
 
 
-ARP_BARS = [(7.5, [66, 69, 73, 74], 0.17), (10.0, [66, 71, 74, 78], 0.17), (12.5, [69, 73, 76, 78], 0.19), (15.0, [66, 69, 73, 76], 0.19),
+ARP_BARS = [(10.0, [66, 71, 74, 78], 0.17), (12.5, [69, 73, 76, 78], 0.19), (15.0, [66, 69, 73, 76], 0.19),
             (17.5, [67, 71, 74, 78], 0.20), (20.0, [67, 71, 74, 79], 0.20), (22.5, [66, 69, 73, 78], 0.22)]
 
 
@@ -151,10 +151,9 @@ def keys_events():
     def add(t, m, v, pan=0.0, bell=0.0):
         ev.append((t, m, v, pan, bell))
     # hero (bars 1-3): sparse notes while the light travels across the back of the phone and the phone turns
-    add(1.9, 69, 0.26, -0.2); add(3.2, 76, 0.24, 0.2); add(4.0, 74, 0.20, -0.1); add(4.4, 78, 0.22, 0.25)
-    # screen wakes: the motif A - D - F# - E
-    t = e["screen_wake"]
-    add(t + 0.15, 69, 0.42, -0.15); add(t + 0.60, 74, 0.44, 0.0); add(t + 1.25, 78, 0.40, 0.15); add(t + 1.85, 76, 0.34, 0.05)
+    add(1.9, 69, 0.26, -0.2); add(3.1, 76, 0.24, 0.2); add(4.4, 74, 0.20, -0.1); add(5.6, 78, 0.24, 0.25); add(6.5, 81, 0.20, -0.2)
+    # display wakes: the motif A - D - F# - E on the grid (beats 2, 3, 4 of bar 4 and the downbeat of bar 5 - a hair early)
+    add(8.125, 69, 0.42, -0.15); add(8.75, 74, 0.44, 0.0); add(9.375, 78, 0.40, 0.15); add(9.85, 76, 0.34, 0.05)
     # the app (bars 4-9): a soft eighth-note arpeggio carries the picture; accents on the beats
     for t0, notes, vel in ARP_BARS:
         for k in range(8):

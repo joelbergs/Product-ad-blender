@@ -13,7 +13,7 @@ SCREEN_BRIGHTNESS = 1.9     # linear emission peak for white UI pixels, calibrat
 def cam_pos(t):
     az, el, d = math.radians(T.cam_az(t)), math.radians(T.cam_el(t)), T.cam_dist(t)
     pz = T.phone_z(t) + T.phone_bob(t)
-    tgt = Vector((T.tgt_x(t), 0.0, pz + T.tgt_z(t)))
+    tgt = Vector((T.tgt_x(t), getattr(T, "tgt_y", lambda _: 0.0)(t), pz + T.tgt_z(t)))
     pos = tgt + Vector((d * math.sin(az) * math.cos(el), -d * math.cos(az) * math.cos(el), d * math.sin(el)))
     return pos, tgt
 
@@ -36,10 +36,21 @@ def animate(frames=None):
         cam.location, tgt.location = pos, tg
         cam.keyframe_insert("location", frame=f)
         tgt.keyframe_insert("location", frame=f)
+        if hasattr(T, "cam_roll"):                              # own look-at with roll (the Track-To constraint cannot roll)
+            for con in list(cam.constraints): cam.constraints.remove(con)
+            z_ax = (pos - tg).normalized()
+            x_ax = Vector((0, 0, 1)).cross(z_ax).normalized()
+            y_ax = z_ax.cross(x_ax)
+            r = math.radians(T.cam_roll(t))
+            x_r, y_r = x_ax * math.cos(r) + y_ax * math.sin(r), -x_ax * math.sin(r) + y_ax * math.cos(r)
+            from mathutils import Matrix
+            m = Matrix(((x_r.x, y_r.x, z_ax.x), (x_r.y, y_r.y, z_ax.y), (x_r.z, y_r.z, z_ax.z)))
+            cam.rotation_euler = m.to_euler("XYZ", cam.rotation_euler)
+            cam.keyframe_insert("rotation_euler", frame=f)
         cd = cam.data
         cd.lens, cd.shift_x = T.cam_focal(t), T.cam_shift_x(t)
         cd.dof.aperture_fstop = T.cam_fstop(t)
-        cd.dof.focus_distance = (pos - tg).length
+        cd.dof.focus_distance = max(1.0, (pos - tg).length + getattr(T, 'focus_off', lambda _: 0.0)(t))
         cd.keyframe_insert("lens", frame=f)
         cd.keyframe_insert("shift_x", frame=f)
         cd.dof.keyframe_insert("aperture_fstop", frame=f)

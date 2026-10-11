@@ -1,6 +1,6 @@
 """Composes the whole 30 s film (900 frames @ 30 fps) as PNG frames:
-   0.0 - 7.5 s   3D hero (Cycles renders of the burgundy phone, scripts/render_hero.py)
-   7.5 - 25  s   the real Lacrydia app (deterministic recordings from capture/seq) on a virtual 3D device, moving virtual camera, depth of
+   0.0 - 10.0 s  3D hero: four shots (Cycles renders of the burgundy phone, scripts/render_hero.py) + typography
+   10.0 - 25 s   the real Lacrydia app (deterministic recordings from capture/seq) on a virtual 3D device, moving virtual camera, depth of
                  field, glass sheen, bloom, floating photographs, typography
    25  - 30  s   brand end card
 The virtual camera uses the same pinhole model as the Blender camera (85 mm on a 36 mm sensor), so the 2D device lands exactly where the
@@ -24,7 +24,7 @@ ap.add_argument("--hero", default="renders/hero_review")
 a = ap.parse_args()
 
 W = a.w; H = W * 9 // 16; S = W / 1920.0
-FPS = 30; NF = 900
+FPS = 30; NF = 900; HERO_END = 10.0
 FOCAL_MM = 85.0
 FX = W * FOCAL_MM / 36.0
 JOURNEY = p("capture", "seq", "journey_a"); TABS = p("capture", "seq", "tabs_b")
@@ -55,8 +55,8 @@ def seq_frame(dirp, x):         # fractional frame index -> blended RGB float im
     return A * (1 - k) + load_rgb(os.path.join(dirp, f"f{i+1:04d}.jpg")) * k
 
 # ============================================================================================================ recording time maps
-J_MAP = curve([(7.5, 0), (8.3, 24), (11.0, 93), (11.7, 117), (12.0, 123), (12.6, 140), (14.4, 226), (15.0, 244), (15.45, 262), (17.2, 320), (18.0, 345), (30, 372)])
-T_MAP = curve([(17.5, 0), (17.7, 6), (19.8, 99), (20.0, 104), (21.5, 178), (21.8, 199), (22.5, 232), (23.0, 249), (30, 268)])
+J_MAP = curve([(10.0, 0), (10.5, 24), (12.6, 93), (13.1, 117), (13.4, 123), (13.8, 140), (15.2, 226), (15.6, 244), (15.9, 262), (16.9, 322), (17.1, 340), (30, 372)])
+T_MAP = curve([(17.0, 0), (17.15, 6), (18.5, 95), (18.65, 102), (19.9, 190), (20.05, 200), (21.4, 249), (30, 268)])
 
 # ============================================================================================================ assets
 def rrect(size, r, ss_=3):
@@ -84,6 +84,16 @@ def device_base():
     return img, body
 BASE_RGB, BODY_A = device_base()
 SCR_MASK = np.zeros(BODY_A.shape, np.float32); SCR_MASK[MPX:MPX + SCR_PX[1], MPX:MPX + SCR_PX[0]] = rrect(SCR_PX, R_SCR)
+
+def side_texture(length_px, along):
+    """Brushed burgundy metal strip for a device side face (1 px high gradient across thickness, light streak along the length)."""
+    th_ = 64; xs = np.linspace(0, 1, th_, dtype=np.float32)[None, :, None]
+    ys = np.linspace(0, 1, length_px, dtype=np.float32)[:, None, None]
+    base = np.array([0.40, 0.11, 0.17], np.float32)
+    shade = 0.35 + 0.9 * np.exp(-((xs - 0.35) / 0.22) ** 2) + 0.25 * np.exp(-((ys - along) / 0.18) ** 2)
+    img = np.broadcast_to(base * shade, (length_px, th_, 3)).copy()
+    return np.dstack([np.clip(img, 0, 1), np.ones((length_px, th_), np.float32)])
+SIDE_TEX = {"v": side_texture(512, 0.3), "h": side_texture(256, 0.5)}
 
 def device_texture(screen_rgb, sheen=None):
     img = BASE_RGB.copy()
@@ -113,9 +123,12 @@ for pid in ["p3", "p6", "p8", "p18", "p17", "p21"]:
 
 # ============================================================================================================ virtual camera + quads
 class Cam:
-    def __init__(s, pos, tgt, focal=FOCAL_MM, shift=(0.0, 0.0)):
+    def __init__(s, pos, tgt, focal=FOCAL_MM, shift=(0.0, 0.0), roll=0.0):
         s.pos = np.array(pos, float); f = np.array(tgt, float) - s.pos; s.f = f / np.linalg.norm(f)
         r = np.cross(s.f, [0, 0, 1.0]); s.r = r / np.linalg.norm(r); s.u = np.cross(s.r, s.f)
+        if roll:
+            c_, n_ = math.cos(math.radians(roll)), math.sin(math.radians(roll)); r0, u0 = s.r.copy(), s.u.copy()
+            s.r = r0 * c_ + u0 * n_; s.u = -r0 * n_ + u0 * c_
         s.fx = W * focal / 36.0; s.shift = shift
     def project(s, P):
         v = np.asarray(P, float) - s.pos; z = v @ s.f
@@ -204,7 +217,7 @@ def draw_text(canvas, arr, cx, cy, alpha, rise=0.0, blur=0.0, anchor="left", gai
 
 def reveal(t, t0, dur=0.7):       # eased 0..1
     return ss((t - t0) / dur)
-def line_anim(t, t_in, t_out, fade=0.55):
+def line_anim(t, t_in, t_out, fade=0.35):
     a_in = reveal(t, t_in, 0.8); a_out = 1.0 - ss((t - t_out) / fade)
     return a_in * a_out, (1 - a_in) * 26 * S, (1 - a_in) * 9 * S
 
@@ -220,50 +233,73 @@ def logo_mark(h_px, color=(255, 255, 255)):
     return np.dstack([np.ones_like(al) * color[0] / 255, np.ones_like(al) * color[1] / 255, np.ones_like(al) * color[2] / 255, al])
 
 # ============================================================================================================ camera + device choreography
+# device side per scene (+1 device left of centre / text right, -1 device right / text left)
 def cam_state(t):
-    """(azimuth deg, elevation deg, distance cm, target x, target z, focal)."""
-    az = curve([(0, 0), (7.9, 0), (10.2, -9), (12.5, -2), (13.2, 6), (16.8, 11), (17.6, 2), (19.8, -7), (21.6, 4), (22.5, 6), (25, 16), (30, 16)])
-    el = curve([(0, 0), (7.9, 0), (10.5, 3), (13, 2), (17, 4), (20, 2), (22.5, 3), (25, 9), (30, 9)])
-    dist = curve([(0, 66), (7.9, 66), (10.5, 68), (12.5, 70), (14.8, 70), (17.4, 70), (20, 70), (22.0, 70), (23.2, 86), (25, 116), (30, 124)])
-    tx = curve([(0, 0), (7.9, 0), (9.6, -4.8), (12.4, -4.8), (13.5, 4.8), (16.9, 4.8), (17.8, -4.8), (21.0, -4.8), (22.4, 0.0), (30, 0)])
-    tz = curve([(0, 0), (7.9, 0), (12, 0.6), (17, -0.4), (22, 0.0), (25, -0.6), (30, -0.6)])
-    return az(t), el(t), dist(t), tx(t), tz(t), FOCAL_MM
+    """(azimuth deg, elevation deg, distance cm, target x, target z, roll deg). Alternating sides, swinging orbit, push-ins."""
+    az = curve([(0, 0), (10.0, 0), (11.4, -14), (13.2, -6), (14.0, 15), (15.4, 21), (16.0, -15), (17.1, -20), (17.6, 12), (18.9, 16), (19.6, -14), (20.8, -18), (21.8, 12), (22.5, 4), (25, 14), (30, 14)])
+    el = curve([(0, 0), (10.0, 0), (11.6, 4), (13.4, -3), (15.0, 5), (16.5, -4), (18.0, 4), (19.6, -3), (21.2, 5), (22.5, 3), (25, 9), (30, 9)])
+    dist = curve([(0, 66), (10.0, 66), (11.6, 68), (13.2, 70), (14.8, 68), (16.4, 70), (18.0, 68), (19.8, 70), (21.4, 68), (22.4, 72), (23.4, 88), (25, 116), (30, 124)])
+    tx = curve([(0, 0), (10.0, 0), (11.0, -4.6), (13.0, -4.6), (13.9, 4.6), (15.4, 4.6), (16.2, -4.6), (17.0, -4.6), (17.6, 4.6), (18.7, 4.6), (19.2, -4.6), (20.2, -4.6), (20.9, 4.6), (22.0, 4.6), (22.9, 0.0), (30, 0)])
+    tz = curve([(0, 0), (10.0, 0), (12, 0.6), (17, -0.4), (22, 0.0), (25, -0.6), (30, -0.6)])
+    ro = curve([(0, 0), (10.0, 0), (11.4, -2.5), (13.3, 1.5), (14.8, 3.0), (16.0, -2.5), (17.4, 2.0), (19.0, 2.5), (20.0, -2.0), (21.6, 2.0), (22.8, 0.0), (30, 0)])
+    return az(t), el(t), dist(t), tx(t), tz(t), ro(t)
 
 def make_cam(t):
-    az, el, d, tx, tz, fo = cam_state(t)
+    az, el, d, tx, tz, ro = cam_state(t)
     tgt = np.array([tx, 0.0, tz]); azr, elr = math.radians(az), math.radians(el)
     pos = tgt + d * np.array([math.sin(azr) * math.cos(elr), -math.cos(azr) * math.cos(elr), math.sin(elr)])
-    return Cam(pos, tgt, fo)
+    return Cam(pos, tgt, FOCAL_MM, roll=ro)
 
 SIDE_YAW = 20.0
 def side_device_x(t):             # flanking devices slide in for the "complete experience" shot
-    return 1.0 - seg(t, 22.4, 24.0)
+    return 1.0 - seg(t, 22.5, 24.0)
 def brand_fade(t): return seg(t, 25.0, 26.3)
 
 # floating photographs: (id, x, y(depth behind device), z, yaw, size_h, in, out)
-CARDS = [("p3", -14, 26, 5, 14, 9, 8.6, 25), ("p8", 19, 34, -9, -16, 11, 9.4, 25), ("p18", -23, 40, -12, 10, 12, 10.2, 25),
-         ("p6", 25, 22, 10, -12, 8, 11.0, 25), ("p17", 4, 52, 12, 5, 12, 12.2, 25), ("p21", -6, 46, -17, -8, 9, 13.0, 25)]
+CARDS = [("p3", -14, 26, 5, 14, 9, 11.0, 25), ("p8", 19, 34, -9, -16, 11, 11.6, 25), ("p18", -23, 40, -12, 10, 12, 12.2, 25),
+         ("p6", 25, 22, 10, -12, 8, 12.8, 25), ("p17", 4, 52, 12, 5, 12, 13.4, 25), ("p21", -6, 46, -17, -8, 9, 14.0, 25)]
 
 # ============================================================================================================ the frame
-HERO_DIR = p(a.hero); HERO_LAST = 226
+HERO_DIR = p(a.hero)
+_hero_ids = sorted(int(f[1:5]) for f in os.listdir(HERO_DIR) if f.startswith("f") and f.endswith(".png")) if os.path.isdir(HERO_DIR) else []
+_flow_cache = {}
+_dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
+
+def _flow(n0, n1):
+    """Dense flow n0 -> n1 and n1 -> n0 at half resolution (cached)."""
+    key = (n0, n1)
+    if key not in _flow_cache:
+        if len(_flow_cache) > 6: _flow_cache.pop(next(iter(_flow_cache)))
+        A, B = load_rgb(os.path.join(HERO_DIR, f"f{n0:04d}.png")), load_rgb(os.path.join(HERO_DIR, f"f{n1:04d}.png"))
+        sm = lambda im: cv2.cvtColor(cv2.resize((np.clip(im, 0, 1) ** 0.55 * 255).astype(np.uint8), (im.shape[1] // 2, im.shape[0] // 2), interpolation=cv2.INTER_AREA), cv2.COLOR_RGB2GRAY)
+        ga, gb = sm(A), sm(B)
+        _flow_cache[key] = (_dis.calc(ga, gb, None), _dis.calc(gb, ga, None))
+    return _flow_cache[key]
+
+def _warp(img, flow, k):
+    """Backward-warp img by k * flow (flow given at half resolution)."""
+    h_, w_ = img.shape[:2]
+    fl = cv2.resize(flow, (w_, h_), interpolation=cv2.INTER_LINEAR) * 2.0 * k
+    gx, gy = np.meshgrid(np.arange(w_, dtype=np.float32), np.arange(h_, dtype=np.float32))
+    return cv2.remap(img, gx - fl[..., 0], gy - fl[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+
 def hero_frame(t):
-    f = t * FPS + 1; f = min(f, HERO_LAST)
-    def get(n):
-        n = int(min(n, HERO_LAST))
-        for q in (n, n - 1, n + 1, n - 2, n + 2):
-            fp = os.path.join(HERO_DIR, f"f{q:04d}.png")
-            if q >= 1 and os.path.exists(fp): return load_rgb(fp)
-        return None
-    lo = int(math.floor(f)); hi = lo + 1; k = f - lo
-    A, B = get(lo), get(hi)
-    if A is None: return np.zeros((H, W, 3), np.float32) if B is None else cv2.resize(B, (W, H))
-    if B is None or k < 1e-3: out = A
-    else: out = A * (1 - k) + B * k
+    """The 3D hero at film time t. Cycles frames exist every 2-3 frames; in-betweens come from optical-flow interpolation."""
+    f = min(t * FPS + 1, _hero_ids[-1] if _hero_ids else 1)
+    if not _hero_ids: return np.zeros((H, W, 3), np.float32)
+    import bisect
+    j = bisect.bisect_right(_hero_ids, f + 1e-6) - 1; n0 = _hero_ids[max(j, 0)]
+    if abs(f - n0) < 1e-3 or j + 1 >= len(_hero_ids): out = load_rgb(os.path.join(HERO_DIR, f"f{n0:04d}.png"))
+    else:
+        n1 = _hero_ids[j + 1]; k = (f - n0) / (n1 - n0)
+        A, B = load_rgb(os.path.join(HERO_DIR, f"f{n0:04d}.png")), load_rgb(os.path.join(HERO_DIR, f"f{n1:04d}.png"))
+        fab, fba = _flow(n0, n1)
+        out = _warp(A, fba, k) * (1 - k) + _warp(B, fab, 1 - k) * k       # each frame is pulled towards the time between them
     return cv2.resize(out, (W, H), interpolation=cv2.INTER_AREA if out.shape[1] > W else cv2.INTER_CUBIC)
 
 def screen_for(t, which="main"):
     if which == "main":
-        if t < 17.5: return seq_frame(JOURNEY, J_MAP(t))
+        if t < 17.0: return seq_frame(JOURNEY, J_MAP(t))
         return seq_frame(TABS, T_MAP(t))
     if which == "left": return seq_frame(JOURNEY, 100)
     return seq_frame(JOURNEY, 296 + 0.0)
@@ -272,14 +308,13 @@ def render_frame(i):
     t = i / FPS
     canvas = np.zeros((H, W, 3), np.float32)
     # 0 - 7.5 s: the 3D hero is the picture
-    plate_a = 1.0 - seg(t, 7.5, 8.15)
-    if t < 8.2:
-        hero = hero_frame(min(t, 7.5 + 0.0))
-    else: hero = None
+    plate_a = 1.0 - seg(t, HERO_END, HERO_END + 0.65)
+    hero = hero_frame(min(t, HERO_END)) if t < HERO_END + 0.7 else None
     cam = make_cam(t)
     canvas[:] = background(t)
     if hero is not None: canvas = canvas * (1 - plate_a) + hero * plate_a
-    if t < 7.5:
+    if t < HERO_END:
+        hero_text(canvas, t)
         return finish(canvas, t)
     # --- 2D app on a virtual device -------------------------------------------------------------------------
     bf = brand_fade(t)
@@ -299,7 +334,7 @@ def render_frame(i):
     # devices
     dev_specs = [("main", np.array([0.0, 0.0, 0.0]), 0.0, 1.0)]
     sd = side_device_x(t)
-    if t > 22.3:
+    if t > 22.4:
         dev_specs.append(("left", np.array([-9.6 - 6 * sd, 4.0 + 6 * sd, -0.4]), SIDE_YAW, 1 - sd))
         dev_specs.append(("right", np.array([9.6 + 6 * sd, 4.0 + 6 * sd, -0.4]), -SIDE_YAW, 1 - sd))
     sheen_pos = ((t * 0.18) % 1.8) / 1.8
@@ -307,8 +342,14 @@ def render_frame(i):
         scr = screen_for(t, name)
         if name == "main":
             yaw = yaw
-        tex = device_texture(scr, sheen_map(sheen_pos if name == "main" else 0.2, 0.55 * (0.5 if t < 8 else 1.0)))
+        tex = device_texture(scr, sheen_map(sheen_pos if name == "main" else 0.2, 0.34))
         cr = quad_corners(cen, BODY_CM, yaw)
+        depth = rot(yaw, 0, 0) @ np.array([0.0, 0.875, 0.0])                  # body thickness, away from the viewer
+        back = [c + depth for c in cr]
+        for (i0, i1, key) in ((0, 1, "h"), (1, 2, "v"), (3, 2, "h"), (0, 3, "v")):         # top, right, bottom, left faces
+            quad = [cr[i0], back[i0], back[i1], cr[i1]]
+            sl, sz = warp_quad(cam, SIDE_TEX[key], quad, (W, H))
+            if sl is not None: layers.append((sz + 0.2, sl * (al * dev_alpha), "side"))
         lay, zc = warp_quad(cam, tex, cr, (W, H))
         if lay is not None: layers.append((zc, lay * (al * dev_alpha), name))
         if t > 22.0:                                   # glossy floor: mirrored device, fading with distance from the floor line
@@ -338,6 +379,16 @@ def render_frame(i):
     txt = typography(canvas, t)
     return finish(canvas, t)
 
+def hero_text(canvas, t):
+    """Titles over the 3D shots (Apple-style big white sans, enters with a soft blur-in)."""
+    def line(txt, t_in, t_out, x, y, size=74, anchor="left", wt="Medium"):
+        arr = text_img([txt], size, wt, "left" if anchor == "left" else "center")
+        al, rise, bl = line_anim(t, t_in, t_out); pad = int(size * S * 0.6)
+        draw_text(canvas, arr, (x - pad) if anchor == "left" else x, y + rise * 0.0, al, rise, bl, anchor=anchor)
+    line("Meet Lacrydia.", 3.1, 4.9, W * 0.075, H * 0.80, 82)
+    line("Your images.", 5.6, 7.45, W * 0.075, H * 0.50, 82)
+    line("Your world.", 8.1, 9.75, W * 0.075, H * 0.50, 82)
+
 def typography(canvas, t):
     L, R = W * 0.075, W * 0.925; cy = H * 0.5
     big = 74; med = 74
@@ -347,15 +398,14 @@ def typography(canvas, t):
         x = L - pad if side == "left" else R - arr.shape[1] + pad
         draw_text(canvas, arr, x, cy + dy * H, al, rise, bl, anchor="left")
     sub = lambda lines, t_in, t_out, side="left", dy=0.0: head(lines, t_in, t_out, side, dy, 30)
-    # scene 2: the tree
-    head(["Your life,"], 8.75, 12.2, "left", -0.05); head(["branch by branch."], 9.45, 12.2, "left", 0.05)
-    # scene 3: privacy (device on the right at that time, text left? device sits right -> text left)
-    head(["Private"], 13.2, 17.3, "right", -0.05); head(["by default."], 13.9, 17.3, "right", 0.05)
-    # scene 4: share / discover / collect (device on the left, text right)
-    head(["Share."], 17.9, 19.7, "left"); head(["Discover."], 19.85, 21.45, "left"); head(["Collect."], 21.55, 22.6, "left")
+    # app scenes: the text sits opposite the device (sides alternate, see cam_state)
+    head(["Your life,"], 10.45, 12.9, "left", -0.05); head(["branch by branch."], 11.0, 12.9, "left", 0.05)
+    head(["Every memory,"], 14.0, 15.3, "right", -0.05); head(["in its place."], 14.35, 15.3, "right", 0.05)
+    head(["Private"], 16.3, 17.0, "left", -0.05); head(["by default."], 16.55, 17.0, "left", 0.05)
+    head(["Share."], 17.7, 18.5, "right"); head(["Discover."], 19.3, 20.0, "left"); head(["Collect."], 21.1, 22.4, "right")
     # scene 5: complete experience
     arr = text_img(["All of it. In one place."], 54, "Medium", "center")
-    al, rise, bl = line_anim(t, 23.5, 25.0); draw_text(canvas, arr, W / 2, H * 0.14, al, rise, bl, anchor="center")
+    al, rise, bl = line_anim(t, 23.3, 25.0); draw_text(canvas, arr, W / 2, H * 0.14, al, rise, bl, anchor="center")
     # brand end card
     bf = seg(t, 25.4, 26.2)
     if t > 25.2:

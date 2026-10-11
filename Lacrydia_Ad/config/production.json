@@ -174,18 +174,6 @@
    "layer": "WHOOSH"
   },
   {
-   "id": "lens_glint",
-   "t": 1.8,
-   "what": "light catches the camera lens rings",
-   "layer": "MATERIAL"
-  },
-  {
-   "id": "macro_air",
-   "t": 2.0,
-   "what": "camera glides back from the macro (2.0-3.4 s)",
-   "layer": "WHOOSH"
-  },
-  {
    "id": "emerge",
    "t": 2.5,
    "what": "bar 2: first chord (Dsus2); the phone is revealed",
@@ -198,80 +186,92 @@
    "layer": "IMPACTS"
   },
   {
-   "id": "rotate_whoosh_1",
-   "t": 3.6,
-   "what": "phone turns from back towards its front (3.75-6.25 s)",
-   "layer": "WHOOSH"
+   "id": "lens_glint",
+   "t": 3.0,
+   "what": "light catches the camera lens rings",
+   "layer": "MATERIAL"
   },
   {
    "id": "macro_cut_air",
-   "t": 3.75,
+   "t": 5.0,
    "what": "bar 2 beat 3: chord Bm11",
    "layer": "MUSIC"
   },
   {
+   "id": "macro_air",
+   "t": 5.5,
+   "what": "camera glides back from the macro (2.0-3.4 s)",
+   "layer": "WHOOSH"
+  },
+  {
    "id": "light_sweep",
-   "t": 4.375,
+   "t": 7.5,
    "what": "chord colour shifts towards the wake",
    "layer": "MUSIC"
   },
   {
-   "id": "turn_whoosh_2",
-   "t": 4.9,
-   "what": "second half of the turn, front comes into view",
+   "id": "rotate_whoosh_1",
+   "t": 7.7,
+   "what": "phone turns from back towards its front (3.75-6.25 s)",
    "layer": "WHOOSH"
   },
   {
    "id": "screen_wake",
-   "t": 5.0,
+   "t": 8.3,
    "what": "display wakes with the Tree screen; piano motif A-D-F#-E",
    "layer": "INTERFACE"
   },
   {
+   "id": "turn_whoosh_2",
+   "t": 8.6,
+   "what": "second half of the turn, front comes into view",
+   "layer": "WHOOSH"
+  },
+  {
    "id": "push_in",
-   "t": 7.5,
+   "t": 9.7,
    "what": "hand-over to the display: the camera glides in (bar 4)",
    "layer": "WHOOSH"
   },
   {
-   "id": "swipe_1",
-   "t": 8.3,
-   "what": "tap on the Travel branch: the camera flies into the tree",
-   "layer": "INTERFACE"
-  },
-  {
    "id": "text_a",
-   "t": 8.75,
+   "t": 10.45,
    "what": "headline 1 appears: 'Your life, branch by branch.'",
    "layer": "INTERFACE"
   },
   {
+   "id": "swipe_1",
+   "t": 10.5,
+   "what": "tap on the Travel branch: the camera flies into the tree",
+   "layer": "INTERFACE"
+  },
+  {
    "id": "swipe_2",
-   "t": 11.7,
+   "t": 13.1,
    "what": "tap Open: branch page",
    "layer": "INTERFACE"
   },
   {
    "id": "swipe_3",
-   "t": 15.0,
+   "t": 15.6,
    "what": "tap a photo: viewer opens",
    "layer": "INTERFACE"
   },
   {
    "id": "swipe_5",
-   "t": 17.6,
+   "t": 17.0,
    "what": "tap Home: feed ('Share.')",
    "layer": "INTERFACE"
   },
   {
    "id": "swipe_4",
-   "t": 19.8,
+   "t": 18.6,
    "what": "tap Explore ('Discover.')",
    "layer": "INTERFACE"
   },
   {
    "id": "swipe_6",
-   "t": 21.5,
+   "t": 20.0,
    "what": "tap Playlists ('Collect.')",
    "layer": "INTERFACE"
   },
