@@ -1,0 +1,17 @@
+build/
+__pycache__/
+*.pyc
+# Assets copied from the PRIVATE Lacrydia repos (unreleased app screenshots, logo, brand).
+# This repo is PUBLIC, so they stay local. See Lacrydia_Ad/documentation/assets_and_licenses.md.
+Lacrydia_Ad/assets/lacrydia/
+Lacrydia_Ad/assets/screen_recordings/
+# Heavy / re-creatable output
+Lacrydia_Ad/renders/
+Lacrydia_Ad/logs/
+Lacrydia_Ad/project/*.blend1
+# Re-creatable from scripts (synthesised audio) and system fonts: not committed
+Lacrydia_Ad/assets/audio/
+Lacrydia_Ad/assets/fonts/
+# Checkpoint screenshots contain frames of the unreleased app UI (private); code checkpoints (*.py) are kept
+Lacrydia_Ad/project/checkpoints/**/*.png
+*.whl

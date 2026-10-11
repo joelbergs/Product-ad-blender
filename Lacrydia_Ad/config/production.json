@@ -1,0 +1,280 @@
+{
+  "title": "Lacrydia - cinematic product film",
+  "fps": 30,
+  "duration_s": 30.0,
+  "profiles": {
+    "thumb": {
+      "width": 960,
+      "height": 540,
+      "samples": 16,
+      "denoise": true
+    },
+    "preview": {
+      "width": 1280,
+      "height": 720,
+      "samples": 32,
+      "denoise": true
+    },
+    "review": {
+      "width": 1920,
+      "height": 1080,
+      "samples": 64,
+      "denoise": true
+    },
+    "final": {
+      "width": 3840,
+      "height": 2160,
+      "samples": 160,
+      "denoise": true
+    },
+    "qc": {
+      "width": 1600,
+      "height": 900,
+      "samples": 96,
+      "denoise": true
+    }
+  },
+  "phone": {
+    "model_note": "Procedural approximation of a current-generation Pro phone (about 150 x 71.9 x 8.75 mm). Not an exact Apple model.",
+    "finish": "burgundy",
+    "size_cm": {
+      "w": 7.19,
+      "h": 15.0,
+      "t": 0.875
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene_01",
+      "name": "Darkness",
+      "t0": 0.0,
+      "t1": 3.0
+    },
+    {
+      "id": "scene_02",
+      "name": "Emerging",
+      "t0": 3.0,
+      "t1": 7.0
+    },
+    {
+      "id": "scene_03",
+      "name": "Macro",
+      "t0": 7.0,
+      "t1": 10.0
+    },
+    {
+      "id": "scene_04",
+      "name": "Screen wakes",
+      "t0": 10.0,
+      "t1": 14.0
+    },
+    {
+      "id": "scene_05",
+      "name": "Into the app",
+      "t0": 14.0,
+      "t1": 17.0
+    },
+    {
+      "id": "scene_06",
+      "name": "The app in use",
+      "t0": 17.0,
+      "t1": 22.0
+    },
+    {
+      "id": "scene_07",
+      "name": "Pull back",
+      "t0": 22.0,
+      "t1": 25.0
+    },
+    {
+      "id": "scene_08",
+      "name": "Typography",
+      "t0": 25.0,
+      "t1": 28.0
+    },
+    {
+      "id": "scene_09",
+      "name": "End card",
+      "t0": 28.0,
+      "t1": 30.0
+    }
+  ],
+  "screen": {
+    "native_px": [
+      1206,
+      2622
+    ],
+    "wake_t": 11.6,
+    "wake_dur": 0.8,
+    "plate_t0": 11.6,
+    "authentic_source": "Lacrydia_Ad/assets/lacrydia/screens/1..5.png (real screenshots of the app's welcome tour, from the private lacrydia-social repo)",
+    "pages": [
+      {
+        "file": "1.png",
+        "name": "Welcome",
+        "show_t": 11.6,
+        "swipe_out_t": 14.6
+      },
+      {
+        "file": "2.png",
+        "name": "The Tree",
+        "show_t": 14.6,
+        "swipe_out_t": 18.0
+      },
+      {
+        "file": "3.png",
+        "name": "Privacy",
+        "show_t": 18.0,
+        "swipe_out_t": 20.0
+      },
+      {
+        "file": "4.png",
+        "name": "Together",
+        "show_t": 20.0,
+        "swipe_out_t": 22.8
+      },
+      {
+        "file": "5.png",
+        "name": "Ready",
+        "show_t": 22.8,
+        "swipe_out_t": null
+      }
+    ],
+    "swipe_dur": 0.55
+  },
+  "copy": {
+    "tagline_line1": "Your images.",
+    "tagline_line2": "Your world.",
+    "tagline_source": "OVERVIEW.md and App Store subtitle in lacrydia-social (brand guidelines list 'Grow your photos.' as an alternative; lead line is a pending owner decision)",
+    "status_line": "Coming soon to iPhone",
+    "url": "lacrydia.com",
+    "url_source": "Website and waitlist are live per lacrydia-social OVERVIEW.md"
+  },
+  "brand": {
+    "ink": "#0A0A0B",
+    "paper": "#F4F4F4",
+    "amber": "#FFA62B",
+    "amber_soft": "#FFD08A",
+    "grey_900": "#161618",
+    "grey_400": "#9C9C9F",
+    "wordmark": {
+      "font": "Inter SemiBold",
+      "case": "upper",
+      "tracking_em": 0.34,
+      "mark_gap_of_mark_height": 0.42
+    }
+  },
+  "events": [
+    {
+      "id": "atmos_in",
+      "t": 1.2,
+      "what": "very soft low tone begins to wake (no visuals yet)"
+    },
+    {
+      "id": "first_light",
+      "t": 2.3,
+      "what": "a narrow strip of light starts to graze the metal frame edge"
+    },
+    {
+      "id": "emerge",
+      "t": 3.0,
+      "what": "phone starts to move out of the dark (rotation + camera glide begin)"
+    },
+    {
+      "id": "emerge_swell",
+      "t": 3.4,
+      "what": "soft deep swell as the silhouette is revealed"
+    },
+    {
+      "id": "rotate_whoosh_1",
+      "t": 4.4,
+      "what": "soft air sweep, phone turning towards back view (4.4-6.8)"
+    },
+    {
+      "id": "macro_cut_air",
+      "t": 6.9,
+      "what": "camera glides into macro on camera module (air, 6.9-7.6)"
+    },
+    {
+      "id": "lens_glint",
+      "t": 8.3,
+      "what": "light catches the lens rings (single subtle glass/metal accent)"
+    },
+    {
+      "id": "light_sweep",
+      "t": 9.5,
+      "what": "reflection sweeps across frame, acting as transition to the screen (9.5-10.4)"
+    },
+    {
+      "id": "turn_whoosh_2",
+      "t": 10.2,
+      "what": "phone turns to show its screen (10.2-12.4)"
+    },
+    {
+      "id": "screen_wake",
+      "t": 11.6,
+      "what": "display wakes up (soft digital bloom, restrained)"
+    },
+    {
+      "id": "push_in",
+      "t": 13.8,
+      "what": "camera moves in towards the screen (13.8-17.0)"
+    },
+    {
+      "id": "swipe_1",
+      "t": 14.6,
+      "what": "page swipe, welcome -> Tree (0.55 s)"
+    },
+    {
+      "id": "swipe_2",
+      "t": 18.0,
+      "what": "page swipe, Tree -> Privacy"
+    },
+    {
+      "id": "swipe_3",
+      "t": 20.0,
+      "what": "page swipe, Privacy -> Together"
+    },
+    {
+      "id": "swipe_4",
+      "t": 22.8,
+      "what": "page swipe, Together -> Ready"
+    },
+    {
+      "id": "pull_back",
+      "t": 22.0,
+      "what": "camera pulls back, light change to warm accent (22.0-25.0)"
+    },
+    {
+      "id": "text_1",
+      "t": 25.3,
+      "what": "first tagline line appears"
+    },
+    {
+      "id": "text_2",
+      "t": 26.3,
+      "what": "second tagline line appears"
+    },
+    {
+      "id": "end_card",
+      "t": 28.0,
+      "what": "text dissolves, logo lockup + status line appear (logo lands ~28.4)"
+    },
+    {
+      "id": "logo_signature",
+      "t": 28.4,
+      "what": "logo audio signature, rings out to the end of the film"
+    },
+    {
+      "id": "end",
+      "t": 30.0,
+      "what": "film ends; audio must have decayed naturally by here"
+    }
+  ],
+  "audio": {
+    "sample_rate": 48000,
+    "channels": 2,
+    "target_lufs": -16.0,
+    "true_peak_dbtp": -1.5
+  }
+}

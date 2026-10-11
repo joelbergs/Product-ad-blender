@@ -1,0 +1,37 @@
+{
+  "_doc": "Film-time timing of the 2D overlays. opacity(t) = baked_opacity-independent envelope in 0..1 (the PNG already contains its own baked alpha, e.g. 0.72 for tagline 1). dy(t) is a vertical offset as a fraction of frame height H; positive = downward. Rest position (envelope 1, dy 0) is where the PNG was rendered. See scripts/plate/overlay_timing.py for the reference implementation.",
+  "version": 1,
+  "film_end_t": 30.0,
+  "easing": {
+    "easeOutCubic": "1-(1-x)^3, x in 0..1",
+    "easeInOutSine": "0.5-0.5*cos(pi*x)"
+  },
+  "overlays": {
+    "overlay_tagline_1": {
+      "event": "text_1", "appear_t": 25.3, "fade_in": 0.7, "disappear_t": 28.0, "fade_out": 0.4,
+      "drift_in_h": 0.012, "drift_out_h": -0.004, "ease_in": "easeOutCubic", "ease_out": "easeInOutSine",
+      "baked_opacity": 0.72, "blur_in": "none"
+    },
+    "overlay_tagline_2": {
+      "event": "text_2", "appear_t": 26.3, "fade_in": 0.7, "disappear_t": 28.0, "fade_out": 0.4,
+      "drift_in_h": 0.012, "drift_out_h": -0.004, "ease_in": "easeOutCubic", "ease_out": "easeInOutSine",
+      "baked_opacity": 1.0, "blur_in": "none"
+    },
+    "overlay_endcard_lockup": {
+      "event": "end_card / logo_signature (audio hit 28.4 falls mid-fade; fully settled 28.7 = stable for the last 1.3 s)",
+      "appear_t": 28.25, "fade_in": 0.45, "disappear_t": null, "fade_out": 0.0,
+      "drift_in_h": 0.012, "drift_out_h": 0.0, "ease_in": "easeOutCubic", "ease_out": "easeInOutSine",
+      "baked_opacity": 1.0, "blur_in": "none"
+    },
+    "overlay_endcard_status": {
+      "event": "end_card", "appear_t": 28.6, "fade_in": 0.5, "disappear_t": null, "fade_out": 0.0,
+      "drift_in_h": 0.012, "drift_out_h": 0.0, "ease_in": "easeOutCubic", "ease_out": "easeInOutSine",
+      "baked_opacity": 0.70, "blur_in": "none"
+    },
+    "overlay_endcard_url": {
+      "event": "end_card", "appear_t": 28.8, "fade_in": 0.5, "disappear_t": null, "fade_out": 0.0,
+      "drift_in_h": 0.012, "drift_out_h": 0.0, "ease_in": "easeOutCubic", "ease_out": "easeInOutSine",
+      "baked_opacity": 1.0, "blur_in": "none"
+    }
+  }
+}
