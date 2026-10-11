@@ -123,10 +123,10 @@ def chords():
     """(name, t_on, t_off, midi notes, amp_db per note). Boundaries come from the config events."""
     e = E
     return [
-        ("D drone",       1.6,                 e["emerge"] + 1.0,    [38 + 12, 45 + 12, 50 + 12], -17.0),
-        ("Dsus2",         e["emerge"],         e["macro_cut_air"],   [50, 57, 64, 69, 74],        -15.5),
-        ("Bm11",          e["macro_cut_air"],  e["light_sweep"],     [47, 54, 57, 62, 64],        -15.0),
-        ("Gmaj7",         e["light_sweep"],    e["screen_wake"],     [43, 50, 54, 59, 62],        -14.0),
+        ("D drone",       1.6,                 e["emerge"] + 1.0,    [38 + 12, 45 + 12, 50 + 12], -19.0),
+        ("Dsus2",         e["emerge"],         e["macro_cut_air"],   [50, 57, 64, 69, 74],        -18.0),
+        ("Bm11",          e["macro_cut_air"],  e["light_sweep"],     [47, 54, 57, 62, 64],        -17.5),
+        ("Gmaj7",         e["light_sweep"],    e["screen_wake"],     [43, 50, 54, 59, 62],        -16.5),
         ("Dadd9 (wake)",  e["screen_wake"],    e["push_in"],         [50, 57, 62, 64, 66, 69],     -8.5),
         ("Bm9",           e["push_in"],        e["swipe_2"],         [47, 54, 57, 61, 62, 66],     -9.0),
         ("Gmaj9",         e["swipe_2"],        e["pull_back"],       [43, 50, 59, 62, 66, 69],     -9.0),
@@ -201,9 +201,10 @@ def render():
     mix = mix * (open_env * end_env)[:, None]
     # bus glue: gentle 3:1 peak-driven compression (zero-phase look-ahead) keeps the crest factor low, so the finished
     # mix can reach the loudness target with true-peak headroom and without any master limiting
-    st = np.sqrt(np.convolve(np.mean(mix[:N] ** 2, axis=1), np.ones(SR) / SR, mode="same"))
-    ref_db = 20 * np.log10(np.percentile(st[SR * 5:SR * 28], 85) + 1e-9)
-    mix = compress(mix, ref_db + 4.0, ratio=3.0, smooth_ms=110.0)
+    cs = np.cumsum(np.mean(mix[:N] ** 2, axis=1))
+    st = np.sqrt((cs[SR:] - cs[:-SR]) / SR)                       # 1 s running RMS
+    ref_db = 20 * np.log10(np.percentile(st[SR * 5:SR * 27], 85) + 1e-9)
+    mix = compress(mix, ref_db + 5.0, ratio=2.5, smooth_ms=110.0)
     mix = shelf_lo(mix, 180.0, -3.0, width_oct=1.0)
     mix = highpass(mix, 28.0, order=2)
     mix = mix[:N]

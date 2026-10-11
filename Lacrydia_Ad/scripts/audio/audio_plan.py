@@ -31,7 +31,7 @@ LAYER_COLOR = {"MUSIC": "COLOR_05", "ATMOSPHERE": "COLOR_04", "IMPACTS": "COLOR_
                "MATERIAL": "COLOR_03", "INTERFACE": "COLOR_02", "LOGO": "COLOR_07"}
 
 # Static trim applied to every strip (calibrated by qa_audio.py so the full mix lands at the loudness target).
-MASTER_TRIM_DB = 0.0
+MASTER_TRIM_DB = 0.2
 
 # name, layer, file, event, base level (dB re file), fade_in (s), fade_out (s)
 # 'film_start' is the pseudo event t=0 (scene_01 t0).
@@ -40,22 +40,22 @@ ENTRIES = [
     ("ATMOSPHERE_room_tone",   "ATMOSPHERE", "assets/audio/sfx/atmos_room_tone.wav",     "film_start",     -51.0, 0.00, 0.60),
     ("ATMOSPHERE_low_tone",    "ATMOSPHERE", "assets/audio/sfx/atmos_low_tone.wav",      "atmos_in",       -27.0, 0.00, 0.60),
     ("IMPACTS_emerge_swell",   "IMPACTS",    "assets/audio/sfx/impact_emerge_swell.wav", "emerge_swell",   -17.0, 0.00, 0.40),
-    ("IMPACTS_screen_wake",    "IMPACTS",    "assets/audio/sfx/impact_screen_wake_sub.wav", "screen_wake", -17.0, 0.00, 0.40),
+    ("IMPACTS_screen_wake",    "IMPACTS",    "assets/audio/sfx/impact_screen_wake_sub.wav", "screen_wake", -15.0, 0.00, 0.40),
     ("IMPACTS_pull_back",      "IMPACTS",    "assets/audio/sfx/impact_pull_back_sub.wav", "pull_back",     -16.0, 0.00, 0.40),
-    ("WHOOSH_rotate_1",        "WHOOSH",     "assets/audio/sfx/whoosh_rotate_01.wav",    "rotate_whoosh_1", -13.0, 0.03, 0.30),
+    ("WHOOSH_rotate_1",        "WHOOSH",     "assets/audio/sfx/whoosh_rotate_01.wav",    "rotate_whoosh_1", -11.0, 0.03, 0.30),
     ("WHOOSH_macro_cut_air",   "WHOOSH",     "assets/audio/sfx/whoosh_macro_air_01.wav", "macro_cut_air",  -11.0, 0.03, 0.30),
-    ("WHOOSH_light_sweep",     "WHOOSH",     "assets/audio/sfx/whoosh_light_sweep_01.wav", "light_sweep",  -11.0, 0.03, 0.30),
-    ("WHOOSH_turn_2",          "WHOOSH",     "assets/audio/sfx/whoosh_turn_02.wav",      "turn_whoosh_2",  -11.0, 0.03, 0.30),
+    ("WHOOSH_light_sweep",     "WHOOSH",     "assets/audio/sfx/whoosh_light_sweep_01.wav", "light_sweep",   -9.0, 0.03, 0.30),
+    ("WHOOSH_turn_2",          "WHOOSH",     "assets/audio/sfx/whoosh_turn_02.wav",      "turn_whoosh_2",   -9.0, 0.03, 0.30),
     ("WHOOSH_push_in",         "WHOOSH",     "assets/audio/sfx/whoosh_push_in_01.wav",   "push_in",         -8.0, 0.03, 0.40),
     ("WHOOSH_pull_back",       "WHOOSH",     "assets/audio/sfx/whoosh_pull_back_01.wav", "pull_back",       -9.0, 0.03, 0.40),
-    ("MATERIAL_first_light",   "MATERIAL",   "assets/audio/sfx/material_first_light.wav", "first_light",   -16.0, 0.00, 0.40),
+    ("MATERIAL_first_light",   "MATERIAL",   "assets/audio/sfx/material_first_light.wav", "first_light",   -14.0, 0.00, 0.40),
     ("MATERIAL_lens_glint",    "MATERIAL",   "assets/audio/sfx/material_lens_glint.wav", "lens_glint",     -11.0, 0.00, 0.40),
-    ("INTERFACE_screen_wake",  "INTERFACE",  "assets/audio/sfx/ui_screen_wake.wav",      "screen_wake",    -10.0, 0.00, 0.40),
-    ("INTERFACE_swipe_1",      "INTERFACE",  "assets/audio/sfx/ui_swipe_01.wav",         "swipe_1",         -8.0, 0.00, 0.15),
+    ("INTERFACE_screen_wake",  "INTERFACE",  "assets/audio/sfx/ui_screen_wake.wav",      "screen_wake",     -8.0, 0.00, 0.40),
+    ("INTERFACE_swipe_1",      "INTERFACE",  "assets/audio/sfx/ui_swipe_01.wav",         "swipe_1",         -6.0, 0.00, 0.15),
     ("INTERFACE_swipe_2",      "INTERFACE",  "assets/audio/sfx/ui_swipe_02.wav",         "swipe_2",         -8.0, 0.00, 0.15),
     ("INTERFACE_swipe_3",      "INTERFACE",  "assets/audio/sfx/ui_swipe_03.wav",         "swipe_3",         -6.0, 0.00, 0.15),
     ("INTERFACE_swipe_4",      "INTERFACE",  "assets/audio/sfx/ui_swipe_04.wav",         "swipe_4",         -5.0, 0.00, 0.15),
-    ("LOGO_signature",         "LOGO",       "assets/audio/sfx/logo_signature.wav",      "logo_signature",  -4.0, 0.00, 0.00),
+    ("LOGO_signature",         "LOGO",       "assets/audio/sfx/logo_signature.wav",      "logo_signature",  -2.0, 0.00, 0.00),
 ]
 
 # gentle music ducking under the biggest low-frequency moments: (name, [(event, offset_s, dB), ...]) piecewise linear
