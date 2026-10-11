@@ -1,0 +1,24 @@
+// Sequence B: Home feed (scroll) -> Explore (scroll) -> Playlists. Deterministic 30 fps.
+import { enterTree } from './flow.mjs'; import { makeRecorder } from './bf_lib.mjs';
+import fs from 'node:fs';
+const OUT = process.argv[2] || 'seq/tabs_b', DPR = +(process.argv[3] || 3);
+const { browser, page, bf } = await enterTree({ dpr: DPR, bf: true });
+const ev = (expr) => bf.cdp.send('Runtime.evaluate', { expression: expr, returnByValue: true }).then((r) => r.result.value);
+const boxOf = (sel) => ev(`(()=>{const e=[...document.querySelectorAll(${JSON.stringify(sel)})].find(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.y>-5&&r.y<874;});if(!e)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+await page.waitForTimeout(1500);
+const tabs = {}; for (const t of ['Home', 'Explore', 'Playlists']) tabs[t] = await boxOf(`[role=tab][aria-label="${t}"]`); console.log(tabs);
+await bf.stopPump?.();
+const R = await makeRecorder(bf);
+fs.rmSync(OUT, { recursive: true, force: true }); fs.mkdirSync(OUT, { recursive: true });
+let n = 0; const marks = {}; const t0 = Date.now();
+const f = () => `${OUT}/f${String(n++).padStart(4, '0')}.jpg`;
+const rec = async (k, label) => { if (label) marks[label] = n; for (let i = 0; i < k; i++) await R.frame(f()); };
+const tapTab = async (t, label) => { marks['tap_' + label] = n; await R.tap(tabs[t].x, tabs[t].y, 2, f); };
+await tapTab('Home', 'home'); await rec(40, 'home');
+await R.drag(300, 600, 300, 300, 36, async () => f()); marks.home_scrolled = n; await rec(20);
+await tapTab('Explore', 'explore'); await rec(40, 'explore');
+await R.drag(300, 600, 300, 250, 36, async () => f()); marks.explore_scrolled = n; await rec(20);
+await tapTab('Playlists', 'playlists'); await rec(48, 'playlists'); await rec(20, 'end');
+fs.writeFileSync(`${OUT}/marks.json`, JSON.stringify({ fps: 30, dpr: DPR, frames: n, marks }, null, 1));
+console.log(`${n} frames in ${((Date.now() - t0) / 1000).toFixed(1)} s`, JSON.stringify(marks));
+await browser.close();
