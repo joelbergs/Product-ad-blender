@@ -68,6 +68,16 @@ def load_manifest():
         return json.load(f)["files"]
 
 
+def _probe_wav(rel):
+    """manifest-less entry for an externally supplied file (e.g. a licensed music track): anchor 0, duration from header."""
+    import wave
+    with wave.open(os.path.join(ROOT, rel), "rb") as w:
+        n, sr, ch = w.getnframes(), w.getframerate(), w.getnchannels()
+    if sr != SR or ch != 2:
+        raise ValueError(f"{rel}: must be 48 kHz stereo (got {sr} Hz, {ch} ch)")
+    return {"anchor_s": 0.0, "anchor_frames": 0, "duration_s": n / sr, "samples": n}
+
+
 def event_times(conf=None):
     conf = conf or cfg()
     ev = {e["id"]: e["t"] for e in conf["events"]}
@@ -121,10 +131,13 @@ def build_plan(conf=None, ev=None, master_trim_db=None, time_offset_s=0.0, entri
     man = load_manifest()
     trim = MASTER_TRIM_DB if master_trim_db is None else master_trim_db
     plan = []
+    ext_music = os.environ.get("LACRYDIA_MUSIC")          # e.g. assets/audio/music/licensed_track.wav (48 kHz stereo WAV)
     for name, layer, rel, event, vol_db, fi, fo in (entries or ENTRIES):
         if name in drop:
             continue
-        m = man[rel]
+        if ext_music and name == "MUSIC_score":
+            rel = ext_music
+        m = man[rel] if rel in man else _probe_wav(rel)
         t_ev = ev[event] + time_offset_s
         start_frame = int(round((t_ev - m["anchor_s"]) * fps)) + 1
         if start_frame < 1 and name != "ATMOSPHERE_room_tone":

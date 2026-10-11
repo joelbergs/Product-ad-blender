@@ -15,3 +15,8 @@ Lacrydia_Ad/assets/fonts/
 # Checkpoint screenshots contain frames of the unreleased app UI (private); code checkpoints (*.py) are kept
 Lacrydia_Ad/project/checkpoints/**/*.png
 *.whl
+Lacrydia_Ad/assets/reference/
+# QC renders show the unreleased app UI (private) and are re-creatable
+Lacrydia_Ad/previews/
+# generated glyph mask (re-created by scripts/make_logo_mask.py)
+Lacrydia_Ad/assets/phone/

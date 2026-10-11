@@ -188,6 +188,19 @@ def run():
     # ---- clicks
     ev_t = [e["t"] for e in conf["events"]] + [p["t_event"] - p["anchor_frames"] / 30 for p in []]
     R["click_scan"] = click_scan(mix, ev_t)
+    # ---- per-asset audit (every WAV in assets/audio)
+    man = AP.load_manifest()
+    aud = {}
+    for rel, m in man.items():
+        a, sr_ = D.read_wav(os.path.join(ROOT, rel))
+        mono_a = a.mean(axis=1)
+        st_rms = np.sqrt(np.mean(a ** 2))
+        aud[rel] = {"sr": sr_, "channels": 2, "frames": round(len(a) / AP.SPF, 3), "peak_dbfs": round(D.peak_db(a), 2),
+                    "clipped": int(np.sum(np.abs(a) >= 0.999)), "dc": float(abs(a.mean(axis=0)).max()),
+                    "first_abs": float(np.abs(a[0]).max()), "last_abs": float(np.abs(a[-1]).max()),
+                    "mono_loss_db": round(float(20 * np.log10(np.sqrt(np.mean(mono_a ** 2)) / (st_rms + 1e-12) + 1e-12)), 2),
+                    "LR_corr": round(float(np.corrcoef(a[:, 0], a[:, 1])[0, 1]), 3) if np.std(a[:, 0]) > 0 and np.std(a[:, 1]) > 0 else None}
+    R["asset_audit"] = aud
     # ---- images
     evl = [(e["t"], e["id"]) for e in conf["events"]]
     os.makedirs(PREV, exist_ok=True)
@@ -218,6 +231,9 @@ def run():
         "blender_gain_structure_equals_plan(env p99 < 0.5 dB)": R["blender_vs_numpy"]["env20ms_p99_abs_diff_db"] < 0.5,
 "all_strips_matched_within_1_sample(corr>0.25)": all(abs(a["measured_offset_samples"]) <= 1 for a in R["alignment"] if a["reliable"]),
     }
+    v["assets_clean(no clip, |DC|<1e-4, start/end ~0, mono loss < 3 dB)"] = all(
+        a["clipped"] == 0 and a["dc"] < 1e-4 and a["first_abs"] < 1e-3 and a["last_abs"] < 1e-3 and a["mono_loss_db"] > -3.0
+        for a in aud.values())
     sil = [s for s in R["silence_-70dB_0.4s"]]
     v["no_silent_gap_below_-70dBFS"] = len(sil) == 0
     R["verdicts"] = v

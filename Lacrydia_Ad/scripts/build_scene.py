@@ -29,14 +29,23 @@ RIG = {
     "LGT_Fill":     dict(loc=(0, -60, 10),   size=(70, 45), strength=0.5, color=(0.92, 0.95, 1.00), low=0.30, feather=0.30),
 }
 
-# neutral product-photography rig for model QC (static, all on): a big overhead, two tall side strips, a dim front fill, two rim strips
+# neutral product-photography rig for model QC / colour evaluation (static, all on). Names follow the studio brief.
 RIG_QC = {
-    "LGT_Top":      dict(loc=(0, -10, 70),   size=(130, 85), strength=3.2, color=(1.00, 1.00, 1.00), low=0.30, feather=0.30),
-    "LGT_StripL":   dict(loc=(-78, -28, 4),  size=(34, 140), strength=4.5, color=(1.00, 1.00, 1.00), low=0.40, feather=0.30),
-    "LGT_StripR":   dict(loc=(78, -28, 4),   size=(34, 140), strength=4.5, color=(1.00, 1.00, 1.00), low=0.40, feather=0.30),
-    "LGT_Fill":     dict(loc=(0, -95, 6),    size=(120, 90), strength=1.6, color=(1.00, 1.00, 1.00), low=0.02, feather=0.35),
-    "LGT_BackRimL": dict(loc=(-48, 62, 4),   size=(12, 110), strength=9,   color=(0.95, 0.97, 1.00), low=0.5,  feather=0.35),
-    "LGT_BackRimR": dict(loc=(48, 62, 4),    size=(12, 110), strength=9,   color=(0.95, 0.97, 1.00), low=0.5,  feather=0.35),
+    "KEY_SOFTBOX":         dict(loc=(-48, -62, 40),  size=(80, 55),   strength=2.0,  color=(1.00, 1.00, 1.00), low=0.25, feather=0.35),
+    "TOP_STRIP":           dict(loc=(0, -18, 78),    size=(130, 34),  strength=3.2,  color=(1.00, 1.00, 1.00), low=0.30, feather=0.35),
+    "LEFT_EDGE_LIGHT":     dict(loc=(-64, -14, 4),   size=(12, 130),  strength=13.0,  color=(1.00, 1.00, 1.00), low=0.40, feather=0.35),
+    "RIGHT_EDGE_LIGHT":    dict(loc=(64, -14, 4),    size=(12, 130),  strength=13.0,  color=(1.00, 1.00, 1.00), low=0.40, feather=0.35),
+    "CAMERA_GLASS_LIGHT":  dict(loc=(-24, -58, 20),  size=(24, 16),   strength=7.0,  color=(1.00, 1.00, 1.00), low=0.60, feather=0.40),
+    "REAR_RIM_LIGHT_L":    dict(loc=(-52, 64, 4),    size=(12, 110),  strength=9.0,  color=(0.95, 0.97, 1.00), low=0.5,  feather=0.35),
+    "REAR_RIM_LIGHT_R":    dict(loc=(52, 64, 4),     size=(12, 110),  strength=9.0,  color=(0.95, 0.97, 1.00), low=0.5,  feather=0.35),
+    "LOW_FILL":            dict(loc=(0, -85, -34),   size=(110, 30),  strength=0.45, color=(1.00, 1.00, 1.00), low=0.30, feather=0.35),
+    # background card behind the phone: the only light that is visible directly to the camera (a faint gradient, never a flat black void)
+    "BACKGROUND_LIGHT":    dict(loc=(0, 140, 4),     size=(420, 280), strength=0.040, color=(0.92, 0.95, 1.00), low=0.35, feather=0.90, camera=True),
+}
+# dark flags (negative fill): black cards visible only in reflections, they keep contrast on the metal
+FLAGS_QC = {
+    "NEG_FILL_L": dict(loc=(-46, -40, 2), size=(16, 70)),
+    "NEG_FILL_R": dict(loc=(46, -40, 2),  size=(16, 70)),
 }
 
 
@@ -76,7 +85,7 @@ def apply_profile(sc, profile, device="CPU"):
     r.use_persistent_data = True
     # colour pipeline: scene-linear -> sRGB (Rec.709 primaries) SDR with highlight roll-off that keeps hues
     sc.display_settings.display_device = "sRGB"
-    sc.view_settings.view_transform = "Khronos PBR Neutral"
+    sc.view_settings.view_transform = "Standard"   # PBR Neutral crushes dark saturated colours (measured: G 4/255), so Standard (sRGB / Rec.709) it is
     sc.view_settings.look = "None"
     sc.view_settings.exposure = 0.0
     im = r.image_settings
@@ -168,8 +177,32 @@ def make_softbox(name, d, col, target):
     ob = bpy.data.objects.new(name, me)
     ob.data.materials.append(m)
     ob.location = d["loc"]
-    ob.visible_camera = False
+    ob.visible_camera = bool(d.get("camera", False))
     ob.visible_shadow = False
+    c2 = ob.constraints.new("TRACK_TO")
+    c2.target, c2.track_axis, c2.up_axis = target, "TRACK_NEGATIVE_Z", "UP_Y"
+    col.objects.link(ob)
+    return ob
+
+
+def make_flag(name, d, col, target):
+    import bmesh
+    bm = bmesh.new()
+    sx, sy = d["size"][0] / 2, d["size"][1] / 2
+    bm.faces.new([bm.verts.new(v) for v in ((-sx, -sy, 0), (sx, -sy, 0), (sx, sy, 0), (-sx, sy, 0))][::-1])
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    m = bpy.data.materials.new(name + "_MAT")
+    m.use_nodes = True
+    pb = next(n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    pb.inputs["Base Color"].default_value = (0, 0, 0, 1)
+    pb.inputs["Roughness"].default_value = 0.9
+    pb.inputs["Specular IOR Level"].default_value = 0.0
+    ob = bpy.data.objects.new(name, me)
+    ob.data.materials.append(m)
+    ob.location = d["loc"]
+    ob.visible_camera = False
     c2 = ob.constraints.new("TRACK_TO")
     c2.target, c2.track_axis, c2.up_axis = target, "TRACK_NEGATIVE_Z", "UP_Y"
     col.objects.link(ob)
@@ -207,6 +240,9 @@ def build_scene(profile="review", finish=None, fresh=True, studio="film", device
     col_lgt.objects.link(ltgt)
     for name, d in (RIG_QC if studio == "qc" else RIG).items():
         make_softbox(name, d, col_lgt, ltgt)
+    if studio == "qc":
+        for name, d in FLAGS_QC.items():
+            make_flag(name, d, col_lgt, ltgt)
 
     if studio == "film":
         for s in C["scenes"]:

@@ -48,14 +48,14 @@ def low_tone(dur=14.0, seed=2002):
     n = nsamp(dur)
     t = np.arange(n) / SR
     drift = 1 + 0.0012 * slow_noise(n, seed, 0.15)
-    parts = [(36.708, 0.30, 0.0), (73.416, 1.0, 0.07), (110.0, 0.30, -0.05), (146.83, 0.14, 0.11), (220.0, 0.05, -0.08)]
+    parts = [(36.708, 0.30, 0.0), (73.416, 1.0, 0.0), (110.0, 0.30, 0.0), (146.83, 0.14, 0.11), (220.0, 0.05, -0.08)]   # sub partials stay phase-locked L=R (mono-safe)
     L = np.zeros(n)
     R = np.zeros(n)
     r = rng(seed)
     for f, a, det in parts:
         ph = r.uniform(0, 6.28, 2)
         L += a * sine(f * drift + det, n, ph[0])
-        R += a * sine(f * drift - det, n, ph[1])
+        R += a * sine(f * drift - det, n, ph[0] if det == 0.0 else ph[1])      # sub partials: identical phase L/R
     trem = 1 + 0.10 * np.sin(2 * np.pi * 0.11 * t + 1.0) + 0.05 * np.sin(2 * np.pi * 0.27 * t)
     env = db_curve([(0, -80), (0.6, -40), (2.0, -20), (4.5, -8), (7.0, 0), (9.0, -3), (11.5, -16), (dur, -70)], n=n)
     out = np.stack([L, R], axis=1) * (trem * env)[:, None]
@@ -73,8 +73,10 @@ def swell(dur, crest, rise_shape=1.0, fundamentals=((36.708, 1.0), (73.416, 0.75
     r = rng(seed)
     for f, a in fundamentals:
         p = r.uniform(0, 6.28, 2)
-        L += a * sine(f * 1.0007, n, p[0])
-        R += a * sine(f * 0.9993, n, p[1])
+        det = 0.0006 if f >= 140 else 0.0              # only partials above 140 Hz get L/R detune; sub stays phase-locked
+        ph = p[0] if det == 0 else None
+        L += a * sine(f * (1 + det), n, p[0])
+        R += a * sine(f * (1 - det), n, p[0] if det == 0 else p[1])
     return np.stack([L, R], axis=1) * env[:, None], env
 
 
@@ -103,8 +105,8 @@ def build():
 
     x = low_tone()
     save_asset(SFX_DIR, "atmos_low_tone.wav", x, "ATMOSPHERE", "atmos_in", 0.0,
-               f"{NM}: D1/D2/A2/D3 sines with +-0.1 Hz L/R detune (slow beating width), 0.11 Hz tremolo; wakes slowly",
-               pan_note="stereo via L/R detune beating (~0.1-0.2 Hz); centred",
+               f"{NM}: D1/D2/A2 sines phase-locked L=R (mono-safe) + D3/A3 with +-0.1 Hz L/R detune (slow width), 0.11 Hz tremolo; wakes slowly",
+               pan_note="sub partials mono-centred; D3/A3 detune gives slow width",
                peak_target_db=-3.0, seed=2002, edge=(2.0, 40.0),
                description="barely-there low tone waking at t=1.2, dissolves under the score by ~13 s")
 
