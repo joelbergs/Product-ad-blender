@@ -97,7 +97,14 @@ def plate(mod, f, lo, hi):
     fab, fba, conf = flow(mod, n0, n1)
     warped = warp(A, fba, k) * (1 - k) + warp(B, fab, 1 - k) * k
     cf = cv2.resize(conf, (A.shape[1], A.shape[0]), interpolation=cv2.INTER_LINEAR)[..., None]
-    return warped * cf + (A * (1 - k) + B * k) * (1 - cf)
+    out = warped * cf + (A * (1 - k) + B * k) * (1 - cf)
+    # flow warping does not conserve energy for very bright thin features (the scan strip): renormalise the in-between to the
+    # exposure its two neighbours predict, so there is no every-other-frame flicker
+    target = (1 - k) * float(A.mean()) + k * float(B.mean())
+    m = float(out.mean())
+    if m > 1e-9 and target > 1e-9:
+        out = out * (target / m)
+    return out
 
 
 # ------------------------------------------------------------------------------------------------ shots
@@ -126,6 +133,12 @@ def linear_frame(i):
     if img.shape[1] != W:
         img = cv2.resize(img, (W, H), interpolation=cv2.INTER_AREA if img.shape[1] > W else cv2.INTER_CUBIC)
     # shot fades (in linear light = exposure ramps, so the picture emerges from / dissolves into darkness like lighting does)
+    if s["id"] == "H":                        # the mark's blurry floor reflection would smudge the wordmark: let it fall away
+        yy = (np.arange(H, dtype=np.float32) / H)[:, None, None]
+        xx = (np.arange(W, dtype=np.float32) / W)[None, :, None]
+        band = np.clip((yy - 0.60) / 0.04, 0, 1) * np.clip((0.83 - yy) / 0.05, 0, 1)
+        side = np.clip((xx - 0.30) / 0.05, 0, 1) * np.clip((0.70 - xx) / 0.05, 0, 1)
+        img = img * (1.0 - 0.92 * band * side)
     fi = motion.ramp(lt, 0.0, s.get("fade_in", 0.0), "inout") if s.get("fade_in", 0) > 0 else 1.0
     fo = 1.0 - motion.ramp(lt, s["dur"] - s.get("fade_out", 0.0), s["dur"], "inout") if s.get("fade_out", 0) > 0 else 1.0
     return img * fi * fo, s, lt
@@ -236,10 +249,11 @@ def overlay(canvas, t):
     # D: the pile
     statement(canvas, t, "A camera roll is a pile.", 17.15, 21.2, W / 2, H * 0.915, size=40)
     # F: the place
-    statement(canvas, t, "Lacrydia is a place.", 31.55, 33.75, W / 2, H * 0.915, size=40)
+    statement(canvas, t, "Lacrydia is a place.", 32.45, 33.65, W / 2, H * 0.935, size=40)
     # G: privacy + sharing (true to the app: private by default; share with friends or everyone)
-    statement(canvas, t, "Private by default.", 34.9, 36.9, W * 0.16, H * 0.47, size=42, anchor="left", track=0.015)
-    statement(canvas, t, "Shared with the people you choose.", 37.0, 38.3, W * 0.16, H * 0.47, size=42, anchor="left", track=0.015)
+    statement(canvas, t, "Private by default.", 34.9, 36.9, W * 0.12, H * 0.47, size=40, anchor="left", track=0.015)
+    statement(canvas, t, "Shared with the", 37.0, 38.3, W * 0.12, H * 0.45, size=40, anchor="left", track=0.015)
+    statement(canvas, t, "people you choose.", 37.1, 38.3, W * 0.12, H * 0.45 + 56 * S, size=40, anchor="left", track=0.015)
     # H: brand
     brand_end(canvas, t)
 

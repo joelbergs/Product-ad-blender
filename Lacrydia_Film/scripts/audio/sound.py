@@ -285,6 +285,7 @@ def master(x, target_lufs):
     x *= g_t[:, None]
     x = D.highpass(x, 24.0, order=1)
     x = D.compress(x, -11.0, 2.2, 140.0)
+    x = D.compress(x, -13.0, 10.0, 18.0)                      # fast peak catcher: bell transients must not set the overall level
     # fade-in/out at the extremes
     t = np.arange(len(x)) / SR
     g = D.cos_fade(t / 0.6) * (1 - D.cos_fade((t - (DUR - 1.6)) / 1.5))

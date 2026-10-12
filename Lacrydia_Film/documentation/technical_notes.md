@@ -31,7 +31,19 @@ EXR) -> `finish.py` (flow interpolation, bloom, grade, grain/dither, typography,
 | Spatial audio | Stereo only | A normal stereo mix was required to be excellent first; stereo movement follows the orbits. |
 | After Effects project | Not produced | Not installed; the finishing is scripted (`finish.py`). |
 
+## What was actually produced
+* 534 Cycles frames at 1920x1080 (A 56 spl; the rest 40 spl, adaptive, OIDN) + 22 extra in-between frames for the D scan strip, about
+  12 CPU-hours in total. Everything else is interpolated (optical flow). Render time per frame: 13-85 s (macro E is the heaviest).
+* Finishing: ProRes 422 HQ master (10-bit), H.264 master (CRF 12, 354 MB), H.264 web (CRF 17, 68 MB), and a 3840x2160 Lanczos
+  upscale (labelled `UPSCALED`; not native 4K).
+* Audio: -16.0 LUFS integrated, LRA 8.6 LU, peak -5.8 dBFS, stereo, 48 kHz (`documentation/qc_report.md`).
+* `verify_bake.py` proves the baked (motion-blurred) animation equals direct evaluation for every baked shot (it caught a real bug:
+  un-keyed camera focus). `qc.py` checks black frames, freezes, flicker (it caught alternate-frame flicker in the scan strip, fixed by
+  rendering the missing in-betweens) and loudness.
+
 ## Honest limitations
-* In-between frames are optical-flow interpolated (every 2nd frame is a true Cycles render).
+* In-between frames are optical-flow interpolated (every 2nd frame is a true Cycles render). Where many cards glide at once (about 32-34 s) the flow can smear a card slightly in single in-between frames.
+* The 4K file is an upscale of the 1080p picture (typography is 1080p-sharp too).
+* No true spatial audio; no After Effects project.
 * The photographs are the app's bundled demo photos: **usage rights must be confirmed** before publication (see `assets_and_licenses.md`).
 * The app is unreleased; the film shows its real onboarding screens: publish only with the owner's approval.

@@ -8,6 +8,16 @@ ffmpeg for finishing. Nothing is hand-keyed; every shot is a deterministic funct
 > Central idea: *A camera roll is a pile. Lacrydia is a place.* (the product's own line), with the people you share with at
 > the end of it: "Private by default. Shared with the people you choose."
 
+## Deliverables (in `final/`, git-ignored; the app is unreleased and the repo public)
+| File | What |
+|---|---|
+| `lacrydia_film_1080p_web.mp4` | **Delivery cut**: 1920x1080, 24 fps, H.264 (12 Mbps), AAC 256k, -16 LUFS |
+| `film_1080/lacrydia_film_master_prores422hq.mov` | Master for further editing (ProRes 422 HQ, 10-bit, BT.709) |
+| `film_1080/lacrydia_film.mp4` | High-bitrate H.264 master (CRF 12) |
+| `lacrydia_film_2160p_UPSCALED_from_1080.mp4` | 3840x2160 convenience encode, **upscaled** from the 1080p master |
+| `contact_sheet.jpg`, `qc_plot.png` | Contact sheet of the finished film; luminance / frame-difference plot |
+| `audio_mix.wav`, `assets/audio/` | Final mix, music bed, FX bus and every cue as its own WAV (original, synthesised) |
+
 ## Layout
 
 ```

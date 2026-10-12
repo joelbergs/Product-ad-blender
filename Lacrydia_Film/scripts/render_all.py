@@ -6,7 +6,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 ap = argparse.ArgumentParser()
 ap.add_argument("--res", default="640x360"); ap.add_argument("--samples", type=int, default=12)
 ap.add_argument("--step", type=int, default=4); ap.add_argument("--out", required=True)
-ap.add_argument("--only", default=""); ap.add_argument("--py", default=sys.executable)
+ap.add_argument("--only", default=""); ap.add_argument("--chunk", type=int, default=24, help="frames per Blender process (state accumulates in long runs)"); ap.add_argument("--py", default=sys.executable)
 a = ap.parse_args()
 film = json.load(open(os.path.join(ROOT, "config", "film.json")))
 fps = film["fps"]
@@ -22,7 +22,12 @@ for m, (f0, f1) in jobs.items():
     if only and m not in only:
         continue
     out = os.path.join(a.out, m)
-    cmd = [a.py, os.path.join(HERE, "render.py"), "--shot", m, "--frames", f"{f0}-{f1}", "--step", str(a.step), "--res", a.res,
-           "--samples", str(a.samples), "--fps", str(fps), "--out", out]
-    print(" ".join(cmd), flush=True)
-    subprocess.run(cmd, check=True)
+    for c0 in range(f0, f1 + 1, a.chunk):
+        c1 = min(c0 + a.chunk - 1, f1)
+        want = [i for i in range(c0, c1 + 1, a.step)]
+        if all(os.path.exists(os.path.join(out, f"{m}_{i:04d}.exr")) for i in want):
+            continue
+        cmd = [a.py, os.path.join(HERE, "render.py"), "--shot", m, "--frames", f"{c0}-{c1}", "--step", str(a.step), "--res", a.res,
+               "--samples", str(a.samples), "--fps", str(fps), "--out", out]
+        print(" ".join(cmd), flush=True)
+        subprocess.run(cmd, check=True)
