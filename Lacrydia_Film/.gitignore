@@ -1,0 +1,11 @@
+# Source assets copied from the PRIVATE Lacrydia repo (unreleased app UI, brand files). Re-create with scripts/setup_assets.py
+assets/lacrydia/
+# Heavy, re-creatable output
+renders/
+previews/
+final/
+build/
+assets/audio/
+*.blend1
+__pycache__/
+assets/generated/
