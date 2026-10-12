@@ -323,7 +323,10 @@ def hero_frame(t):
         warped = _warp(A, fba, k) * (1 - k) + _warp(B, fab, 1 - k) * k    # each frame is pulled towards the time between them
         cf = cv2.resize(conf, (A.shape[1], A.shape[0]), interpolation=cv2.INTER_LINEAR)[..., None]
         out = warped * cf + (A * (1 - k) + B * k) * (1 - cf)              # plain cross-fade wherever the flow cannot be trusted
-    return cv2.resize(out, (W, H), interpolation=cv2.INTER_AREA if out.shape[1] > W else cv2.INTER_CUBIC)
+    if out.shape[1] >= W: return cv2.resize(out, (W, H), interpolation=cv2.INTER_AREA)
+    up = cv2.resize(out, (W, H), interpolation=cv2.INTER_LANCZOS4)          # hero rendered smaller than the output: Lanczos + gentle unsharp mask
+    blur = cv2.GaussianBlur(up, (0, 0), 1.6 * W / 1920.0)
+    return np.clip(up * 1.45 - blur * 0.45, 0, 1)
 
 def screen_for(t, which="main"):
     if which == "main":
