@@ -81,8 +81,11 @@ def device_base():
     body = rrect(BODY_PX, R_BODY); glass_m = rrect((w_ - 2 * GLASS, h_ - 2 * GLASS), R_BODY - GLASS)
     glass = np.zeros((h_, w_), np.float32); glass[GLASS:h_ - GLASS, GLASS:w_ - GLASS] = glass_m
     img = col * (1 - glass[..., None]) + np.array([0.012, 0.012, 0.014], np.float32) * glass[..., None]
-    return img, body
-BASE_RGB, BODY_A = device_base()
+    ring = np.clip(body - glass, 0, 1)
+    return img, body, col, ring
+BASE_RGB, BODY_A, RIM_RGB, RIM_RING = device_base()
+RIM_SLICE_D = None
+RIM_SLICE = np.dstack([np.broadcast_to(RIM_RGB, BASE_RGB.shape) * 0.9, BODY_A])
 SCR_MASK = np.zeros(BODY_A.shape, np.float32); SCR_MASK[MPX:MPX + SCR_PX[1], MPX:MPX + SCR_PX[0]] = rrect(SCR_PX, R_SCR)
 
 def side_texture(length_px, along):
@@ -93,10 +96,21 @@ def side_texture(length_px, along):
     shade = 0.35 + 0.9 * np.exp(-((xs - 0.35) / 0.22) ** 2) + 0.25 * np.exp(-((ys - along) / 0.18) ** 2)
     img = np.broadcast_to(base * shade, (length_px, th_, 3)).copy()
     return np.dstack([np.clip(img, 0, 1), np.ones((length_px, th_), np.float32)])
+RIM_SLICE_D = cv2.resize(RIM_SLICE, (BODY_PX[0] // 2, BODY_PX[1] // 2), interpolation=cv2.INTER_AREA)
 SIDE_TEX = {"v": side_texture(512, 0.3), "h": side_texture(256, 0.5)}
 
-def device_texture(screen_rgb, sheen=None):
+def rim_light_map(pos):
+    """Specular streak that travels around the metal rim (0..1), drawn at quarter resolution."""
+    h_, w_ = BODY_PX[1], BODY_PX[0]
+    yy, xx = np.mgrid[0:h_:4, 0:w_:4].astype(np.float32)
+    d = (xx / w_ + 0.45 * yy / h_) - pos * 2.2 + 0.4
+    hl = np.exp(-(d / 0.10) ** 2) + 0.25
+    return cv2.resize(hl, (w_, h_), interpolation=cv2.INTER_LINEAR)
+
+def device_texture(screen_rgb, sheen=None, rimlight=None):
     img = BASE_RGB.copy()
+    if rimlight is not None:
+        img = img + (RIM_RING * rimlight)[..., None] * np.array([1.0, 0.82, 0.88], np.float32) * 0.9
     win = np.zeros_like(img); win[MPX:MPX + SCR_PX[1], MPX:MPX + SCR_PX[0]] = screen_rgb
     m = SCR_MASK[..., None]
     img = img * (1 - m) + win * m
@@ -163,11 +177,18 @@ def over(canvas, layer):          # layer premultiplied RGBA
     canvas[:] = layer[..., :3] + canvas * (1 - layer[..., 3:4])
 
 # ============================================================================================================ background, particles
-def background(t):
-    yy, xx = np.mgrid[0:H:6, 0:W:6].astype(np.float32); xx /= W; yy /= H
-    glow = np.exp(-(((xx - 0.62) / 0.42) ** 2 + ((yy - 0.55) / 0.55) ** 2))
-    k = 0.020 + 0.050 * glow
-    img = np.dstack([k * 1.55, k * 0.55, k * 0.85]) + np.array([0.006, 0.006, 0.008], np.float32)
+def background(t, center=None, amber=0.0):
+    """Coal black with a very soft pool of light behind the subject (and, on the end card, a faint amber glow)."""
+    cx, cy = (center if center is not None else (W / 2, H / 2))
+    yy, xx = np.mgrid[0:H:8, 0:W:8].astype(np.float32)
+    r2 = ((xx - cx) / (0.30 * W)) ** 2 + ((yy - cy) / (0.62 * H)) ** 2
+    pool = np.exp(-r2) * 0.030                                              # cool white pool behind the device
+    top = np.clip(1 - yy / H * 1.2, 0, 1) ** 2 * 0.006                       # a hint of overhead light
+    img = np.dstack([pool * 0.92 + top, pool * 0.97 + top, pool * 1.10 + top]) + 0.0015
+    if amber > 0:
+        ra = ((xx - W / 2) / (0.34 * W)) ** 2 + ((yy - H * 0.58) / (0.40 * H)) ** 2
+        g = np.exp(-ra) * 0.050 * amber
+        img = img + np.dstack([g * 1.0, g * 0.55, g * 0.12])
     return cv2.resize(img, (W, H), interpolation=cv2.INTER_CUBIC)
 
 rng = np.random.default_rng(11)
@@ -218,8 +239,8 @@ def draw_text(canvas, arr, cx, cy, alpha, rise=0.0, blur=0.0, anchor="left", gai
 def reveal(t, t0, dur=0.7):       # eased 0..1
     return ss((t - t0) / dur)
 def line_anim(t, t_in, t_out, fade=0.35):
-    a_in = reveal(t, t_in, 0.8); a_out = 1.0 - ss((t - t_out) / fade)
-    return a_in * a_out, (1 - a_in) * 26 * S, (1 - a_in) * 9 * S
+    a_in = reveal(t, t_in, 0.55); a_out = 1.0 - ss((t - t_out) / fade)
+    return a_in * a_out, (1 - a_in) * 22 * S, (1 - a_in) * 4.0 * S
 
 def logo_mark(h_px, color=(255, 255, 255)):
     from svgpathtools import parse_path
@@ -256,8 +277,7 @@ def side_device_x(t):             # flanking devices slide in for the "complete 
 def brand_fade(t): return seg(t, 25.0, 26.3)
 
 # floating photographs: (id, x, y(depth behind device), z, yaw, size_h, in, out)
-CARDS = [("p3", -14, 26, 5, 14, 9, 11.0, 25), ("p8", 19, 34, -9, -16, 11, 11.6, 25), ("p18", -23, 40, -12, 10, 12, 12.2, 25),
-         ("p6", 25, 22, 10, -12, 8, 12.8, 25), ("p17", 4, 52, 12, 5, 12, 13.4, 25), ("p21", -6, 46, -17, -8, 9, 14.0, 25)]
+CARDS = []        # floating photographs were removed (they read as blurry blobs on the coal-black background)
 
 # ============================================================================================================ the frame
 HERO_DIR = p(a.hero)
@@ -319,14 +339,14 @@ def render_frame(i):
     plate_a = 1.0 - seg(t, HERO_END, HERO_END + 0.3)
     hero = hero_frame(min(t, HERO_END)) if t < HERO_END + 0.35 else None
     cam = make_cam(t)
-    canvas[:] = background(t)
+    cen_px = cam.project(np.array([0.0, 0.0, 0.0]))[0]
+    canvas[:] = background(t, (cen_px[0], cen_px[1]), seg(t, 25.4, 27.0))
     if hero is not None: canvas = canvas * (1 - plate_a) + hero * plate_a
     if t < HERO_END:
         hero_text(canvas, t)
         return finish(canvas, t)
     # --- 2D app on a virtual device -------------------------------------------------------------------------
     bf = brand_fade(t)
-    particles(canvas, cam, t, 1.0 - bf)
     dev_alpha = 1.0 - bf
     layers = []
     # floating photographs (behind the device)
@@ -350,14 +370,14 @@ def render_frame(i):
         scr = screen_for(t, name)
         if name == "main":
             yaw = yaw
-        tex = device_texture(scr, sheen_map(sheen_pos if name == "main" else 0.2, 0.34))
+        tex = device_texture(scr, sheen_map(sheen_pos if name == "main" else 0.2, 0.34), rim_light_map(((t * 0.22 + (0.0 if name == 'main' else 0.37)) % 1.4) / 1.4) * 0.9)
         cr = quad_corners(cen, BODY_CM, yaw)
         depth = rot(yaw, 0, 0) @ np.array([0.0, 0.875, 0.0])                  # body thickness, away from the viewer
-        back = [c + depth for c in cr]
-        for (i0, i1, key) in ((0, 1, "h"), (1, 2, "v"), (3, 2, "h"), (0, 3, "v")):         # top, right, bottom, left faces
-            quad = [cr[i0], back[i0], back[i1], cr[i1]]
-            sl, sz = warp_quad(cam, SIDE_TEX[key], quad, (W, H))
-            if sl is not None: layers.append((sz + 0.2, sl * (al * dev_alpha), "side"))
+        nsl = 9                                                                 # the metal body: rounded slices from back to front (no square corners)
+        for k in range(1, nsl + 1):
+            fr = k / nsl
+            sl, sz = warp_quad(cam, RIM_SLICE_D, [c + depth * fr for c in cr], (W, H))
+            if sl is not None: layers.append((sz + 0.05 * fr, sl * ((1.0 - 0.60 * fr) * al * dev_alpha), "side"))
         lay, zc = warp_quad(cam, tex, cr, (W, H))
         if lay is not None: layers.append((zc, lay * (al * dev_alpha), name))
         if t > 22.0:                                   # glossy floor: mirrored device, fading with distance from the floor line
@@ -382,7 +402,7 @@ def render_frame(i):
     # bloom: the display lights its surroundings
     gl = cv2.GaussianBlur(dev_glow, (0, 0), 28 * S / 4)
     gl = cv2.resize(gl, (W, H), interpolation=cv2.INTER_CUBIC)
-    canvas += gl * np.array([0.30, 0.17, 0.22], np.float32) * 0.55 * (1 - bf)
+    canvas += gl * np.array([0.20, 0.22, 0.28], np.float32) * 0.40 * (1 - bf)
     # typography
     txt = typography(canvas, t)
     return finish(canvas, t)
@@ -390,18 +410,18 @@ def render_frame(i):
 def hero_text(canvas, t):
     """Titles over the 3D shots (Apple-style big white sans, enters with a soft blur-in)."""
     def line(txt, t_in, t_out, x, y, size=74, anchor="left", wt="Medium"):
-        arr = text_img([txt], size, wt, "left" if anchor == "left" else "center")
+        arr = text_img([txt], size, "SemiBold", "left" if anchor == "left" else "center")
         al, rise, bl = line_anim(t, t_in, t_out); pad = int(size * S * 0.6)
         draw_text(canvas, arr, (x - pad) if anchor == "left" else x, y + rise * 0.0, al, rise, bl, anchor=anchor)
-    line("Meet Lacrydia.", 3.1, 4.9, W * 0.075, H * 0.80, 82)
-    line("Your images.", 5.6, 7.45, W * 0.075, H * 0.50, 82)
-    line("Your world.", 8.1, 9.75, W * 0.075, H * 0.50, 82)
+    line("Meet Lacrydia.", 3.1, 4.9, W * 0.075, H * 0.80, 92)
+    line("Your images.", 5.6, 7.45, W * 0.075, H * 0.50, 92)
+    line("Your world.", 8.1, 9.75, W * 0.075, H * 0.50, 92)
 
 def typography(canvas, t):
     L, R = W * 0.075, W * 0.925; cy = H * 0.5
-    big = 74; med = 74
+    big = 86; med = 86
     def head(lines, t_in, t_out, side="left", dy=0.0, size=big):
-        arr = text_img(lines, size, "Medium", "left" if side == "left" else "right")
+        arr = text_img(lines, size, "SemiBold", "left" if side == "left" else "right")
         al, rise, bl = line_anim(t, t_in, t_out); pad = int(size * S * 0.6)
         x = L - pad if side == "left" else R - arr.shape[1] + pad
         draw_text(canvas, arr, x, cy + dy * H, al, rise, bl, anchor="left")
@@ -412,7 +432,7 @@ def typography(canvas, t):
     head(["Private"], 16.3, 17.0, "left", -0.05); head(["by default."], 16.55, 17.0, "left", 0.05)
     head(["Share."], 17.7, 18.5, "right"); head(["Discover."], 19.3, 20.0, "left"); head(["Collect."], 21.1, 22.4, "right")
     # scene 5: complete experience
-    arr = text_img(["All of it. In one place."], 54, "Medium", "center")
+    arr = text_img(["All of it. In one place."], 64, "SemiBold", "center")
     al, rise, bl = line_anim(t, 23.3, 25.0); draw_text(canvas, arr, W / 2, H * 0.14, al, rise, bl, anchor="center")
     # brand end card
     bf = seg(t, 25.4, 26.2)
