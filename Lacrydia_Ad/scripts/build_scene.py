@@ -65,6 +65,22 @@ def apply_profile(sc, profile, device="CPU"):
     sc.frame_start, sc.frame_end = 1, int(round(C["fps"] * C["duration_s"]))
     cy = sc.cycles
     cy.device = device                       # "CPU" here; "GPU" with the Metal backend on Apple Silicon (see probe_devices.py)
+    if device == "GPU":                      # enable every available GPU backend device (Metal on a Mac, OptiX/CUDA/HIP elsewhere)
+        prefs = bpy.context.preferences.addons["cycles"].preferences
+        for kind in ("METAL", "OPTIX", "CUDA", "HIP", "ONEAPI"):
+            try:
+                prefs.compute_device_type = kind
+                prefs.get_devices()
+                devs = [d for d in prefs.devices if d.type == kind]
+                if devs:
+                    for d in prefs.devices:
+                        d.use = d.type in (kind, "CPU") if kind == "METAL" else d.type == kind
+                    print("Cycles GPU backend:", kind, [d.name for d in devs])
+                    break
+            except Exception:
+                continue
+        else:
+            print("WARNING: no GPU backend found, Cycles falls back to CPU")
     cy.samples = pr["samples"]
     cy.use_adaptive_sampling = True
     cy.adaptive_threshold = 0.015

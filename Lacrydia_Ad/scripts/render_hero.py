@@ -20,7 +20,7 @@ ap.add_argument("--samples", type=int, default=None)
 ap.add_argument("--device", default="CPU")
 ap.add_argument("--handoff-only", action="store_true")
 ap.add_argument("--part", default=None, help="i/n: render only every n-th chunk, e.g. 0/2")
-a = ap.parse_args()
+a = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else None)   # also runs as: Blender -b -P render_hero.py -- <args>
 
 sc = build_scene(a.profile, "burgundy", device=a.device)
 if a.samples:
