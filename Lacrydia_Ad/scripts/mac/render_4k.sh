@@ -18,6 +18,11 @@ setup() {
   if [ ! -x "$PY" ]; then
     python3 -m venv .venv-mac && .venv-mac/bin/pip install -q numpy opencv-python-headless pillow svgpathtools
   fi
+  for s in journey_a tabs_b; do                 # the package carries the recordings as visually lossless videos; unpack them to frames
+    if [ ! -f capture/seq/$s/f0000.jpg ] && [ -f capture/seq_video/$s.mp4 ]; then
+      mkdir -p capture/seq/$s && ffmpeg -loglevel error -y -i capture/seq_video/$s.mp4 -q:v 1 -start_number 0 capture/seq/$s/f%04d.jpg
+    fi
+  done
   for f in capture/seq/journey_a/f0000.jpg capture/seq/tabs_b/f0000.jpg assets/fonts/InterDisplay-SemiBold.otf assets/lacrydia/logo/ikon-09-white.svg renders/final/audio_mix.wav; do
     [ -f "$f" ] || { echo "missing $f - unzip the asset package into Lacrydia_Ad/ first (see scripts/mac/README_MAC_4K.md)"; exit 1; }
   done

@@ -9,8 +9,8 @@ The Metal path was **not tested** (the container has no GPU) – step 2 measures
 * ffmpeg (`brew install ffmpeg`)
 
 ## Steps
-1. `git pull` this branch (`claude/intelligent-wozniak-upuu7i`), then unzip the asset package (sent separately, ~250 MB) **inside `Lacrydia_Ad/`**.
-   It holds what is deliberately not in the public repo: the app recordings (`capture/seq`), the app's demo photos/logos/fonts (`assets/`) and the mastered audio (`renders/final/audio_mix.wav`).
+1. `git pull` this branch (`claude/intelligent-wozniak-upuu7i`), then unzip the asset package (sent separately, ~25 MB) **inside `Lacrydia_Ad/`**.
+   It holds what is deliberately not in the public repo: the app recordings (`capture/seq_video/*.mp4`, unpacked to frames automatically), the app's demo photos/logos/fonts (`assets/`) and the mastered audio (`renders/final/audio_mix.wav`).
 2. `cd Lacrydia_Ad && scripts/mac/render_4k.sh test` – renders one 3840×2160 hero frame; look at the printed `real` seconds.
    Full hero = about 140 frames: multiply. If too slow, lower quality: `SAMPLES=32 scripts/mac/render_4k.sh hero`.
 3. `scripts/mac/render_4k.sh hero` (3D opening 0–10 s, writes `renders/hero_4k/`), then `compose` (900 frames, `renders/film_4k/`), then `encode`
