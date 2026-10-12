@@ -27,15 +27,15 @@ from lib.choreo import scan_x as _scan_x, reveal_time as _reveal_time
 def build(sc):
     S = {}
     rig.set_world(sc)
-    S["floor"] = sets.studio_floor(sc)
+    S["floor"] = sets.studio_floor(sc, pools=((0.0, 0.02, 0.95, 1.45),))
     S["scatter"] = tree.scatter_poses()
     S["cards"] = {}
     black_edge = mat.dark_glass("CardEdge", 0.05)
     for n in tree.NODES:
         asp = tree.photo_aspect(n["photo"])
-        w = n["w"]
+        w = n["w"] * 1.2
         h = w / asp
-        pm = mat.photo_print("print_" + n["id"], f"{PH}/{n['photo']}", rough=0.30, coat=0.55, emit=0.07, exposure=0.9,
+        pm = mat.photo_print("print_" + n["id"], f"{PH}/{n['photo']}", rough=0.30, coat=0.55, emit=0.07, exposure=1.25,
                              diffuse=1.0, spec=0.5)
         ob = geo.make_slab("card_" + n["id"], w, h, THICK, min(0.005, w * 0.07), 0.0010, (pm, black_edge, black_edge),
                            seg_corner=8, seg_edge=3)
@@ -59,15 +59,17 @@ def build(sc):
     for n in tree.NODES:
         if n.get("label"):
             m = mat.emission("label_" + n["id"], (0.86, 0.90, 0.97), 0.0)
-            ob = geo.make_text("label_" + n["id"], n["label"], 0.0068 if n["level"] else 0.0085, m, FONT)
+            ob = geo.make_text("label_" + n["id"], n["label"], 0.0115 if n["level"] else 0.0145, m, FONT)
             S["labels"][n["id"]] = dict(ob=ob, node=m.node_tree.nodes[m["emit_node"]].inputs["Strength"])
     # lights
     L = {}
     L["top"] = rig.area_light("TOP_softbox", (1.5, 1.0), 1.6, (1.0, 0.985, 0.96), (-0.25, -0.35, 1.4), (0, 0, 0))
-    L["scan"] = sets.strip_light(sc, "SCAN_strip", (-0.62, 0.0, 0.45), (-0.62, 0.0, 0.0), (0.05, 1.0), 0.0, (1.0, 0.99, 0.97), end_fade=0.22, edge_soft=0.5, roll=0.0)
-    L["rim_l"] = sets.strip_light(sc, "RIM_L", (-0.95, 0.80, 0.30), (0, 0, 0.01), (0.05, 1.0), 90, (0.88, 0.94, 1.0))
-    L["rim_r"] = sets.strip_light(sc, "RIM_R", (0.95, 0.75, 0.30), (0, 0, 0.01), (0.05, 1.0), 70, (0.88, 0.94, 1.0))
+    L["top"].visible_glossy = False          # lights the pile but is never mirrored as a grey polygon in the floor
+    L["scan"] = sets.strip_light(sc, "SCAN_strip", (-0.62, 0.0, 0.45), (-0.62, 0.0, 0.0), (0.05, 1.0), 0.0, (1.0, 0.99, 0.97), end_fade=0.22, edge_soft=0.5, roll=0.0, no_upward=False)
+    L["rim_l"] = sets.strip_light(sc, "RIM_L", (-0.95, 0.80, 0.30), (0, 0, 0.01), (0.05, 1.0), 40, (0.88, 0.94, 1.0), no_upward=False)
+    L["rim_r"] = sets.strip_light(sc, "RIM_R", (0.95, 0.75, 0.30), (0, 0, 0.01), (0.05, 1.0), 30, (0.88, 0.94, 1.0), no_upward=False)
     L["fill"] = rig.area_light("FILL_cool", (1.4, 1.4), 0.9, (0.55, 0.70, 1.0), (0.4, -1.1, 0.5), (0, 0, 0))
+    L["macro"] = rig.area_light("MACRO_soft", (0.30, 0.18), 0.0, (1.0, 0.97, 0.93), (-0.28, -0.33, 0.20), (0, -0.2, 0.0))
     S["L"] = L
     S["refl"] = [
         sets.reflection_card(sc, "REFL_far", (0.0, 2.2, 0.9), (0, 0.2, 0.0), (3.2, 1.2), 0.30, (0.92, 0.96, 1.0),
@@ -80,26 +82,26 @@ def build(sc):
     S["D"] = dict(
         px=motion.Channel([(0.0, 0.03), (6.5, -0.01)]),
         py=motion.Channel([(0.0, -0.05), (6.5, -0.02)]),
-        pz=motion.Channel([(0.0, 1.14), (6.5, 0.99)]),
+        pz=motion.Channel([(0.0, 1.00), (6.5, 0.82)]),
         tx=motion.Channel([(0.0, 0.02), (6.5, 0.0)]),
         ty=motion.Channel([(0.0, 0.02), (6.5, 0.02)]),
         roll=motion.Channel([(0.0, math.radians(1.5)), (6.5, math.radians(-1.0))]),
     )
-    S["E"] = dict(
-        px=motion.Channel([(6.5, c[0] + 0.070), (10.0, c[0] + 0.036)]),
-        py=motion.Channel([(6.5, c[1] - 0.095), (10.0, c[1] - 0.115)]),
-        pz=motion.Channel([(6.5, 0.042), (10.0, 0.034)]),
-        tx=motion.Channel([(6.5, c[0] - 0.004), (10.0, c[0] - 0.018)]),
-        ty=motion.Channel([(6.5, c[1] + 0.020), (10.0, c[1] + 0.052)]),
-        foc=motion.Channel([(6.5, 0.118), (8.3, 0.126), (10.0, 0.150)]),
+    S["E"] = dict(                                        # extreme detail: orbit-dolly over the root photograph
+        tx=motion.Channel([(6.5, c[0] - 0.010), (10.0, c[0] - 0.022)]),
+        ty=motion.Channel([(6.5, c[1] + 0.030), (10.0, c[1] + 0.058)]),
+        az=motion.Channel([(6.5, -30.0), (10.0, -10.0)]),
+        el=motion.Channel([(6.5, 31.0), (10.0, 23.0)]),
+        dist=motion.Channel([(6.5, 0.25), (10.0, 0.19)]),
+        foc=motion.Channel([(6.5, 1.0), (8.2, 1.0), (10.0, 1.03)]),
     )
     S["F"] = dict(
-        tx=motion.Channel([(10.0, c[0]), (13.0, c[0] - 0.01), (18.5, 0.0)]),
-        ty=motion.Channel([(10.0, c[1] + 0.035), (13.0, c[1] + 0.12), (18.5, 0.055)]),
+        tx=motion.Channel([(10.0, c[0] - 0.022), (13.0, c[0] - 0.01), (18.5, 0.0)]),
+        ty=motion.Channel([(10.0, c[1] + 0.058), (13.0, c[1] + 0.12), (18.5, -0.045)]),
         dist=motion.Channel([(10.0, 0.30), (14.0, 0.85), (18.5, 1.42)]),
-        el=motion.Channel([(10.0, 20.0), (14.0, 40.0), (18.5, 71.0)]),
+        el=motion.Channel([(10.0, 20.0), (14.0, 40.0), (18.5, 68.0)]),
         az=motion.Channel([(10.0, -14.0), (18.5, 0.0)]),
-        lens=motion.Channel([(10.0, 62.0), (18.5, 38.0)]),
+        lens=motion.Channel([(10.0, 62.0), (18.5, 36.0)]),
         fst=motion.Channel([(10.0, 2.4), (13.0, 3.2), (18.5, 6.0)]),
     )
     return S
@@ -170,7 +172,7 @@ def apply(T, S):
         if nid == "root":
             rv = motion.ramp(T, S["rev_t"][nid] - 0.35, S["rev_t"][nid] + 1.3, "out")
         c["rev"].default_value = rv
-        c["emit"].default_value = 0.07 + 0.18 * s * rv
+        c["emit"].default_value = 0.10 + 0.26 * s * rv
         c["ob"].location = (x, y, z + (1 - rv) * 0.006 + THICK / 2)
         c["ob"].rotation_euler = (0, 0, math.radians(yaw))
     # ---- lines + pulses ----
@@ -194,25 +196,30 @@ def apply(T, S):
         lb["ob"].location = (x, y - c["h"] / 2 - 0.010, z + THICK + 0.0005)
         lb["ob"].rotation_euler = (0, 0, 0)
         on = motion.ramp(T, START[nid] + GLIDE - 0.5, START[nid] + GLIDE + 0.8, "out") if nid != "root" else motion.ramp(T, 14.0, 15.2, "out")
-        lb["node"].default_value = 1.6 * on
+        lb["node"].default_value = 2.4 * on
     # ---- lights ----
     sx = _scan_x(T)
     L["scan"].location = (sx, 0.0, 0.45)
     L["scan"].rotation_euler = rig.look_rot((sx, 0.0, 0.45), (sx, 0.0, 0.0), roll=0.0)
     sets.set_energy(L, "scan", 26.0 * motion.pulse(T, 0.4, 1.4, 6.6))
     # the low rim strips belong to the Tree (F); they are off for the pile and for the grazing macro
-    rim = 1.0 * motion.ramp(T, 11.0, 14.5, "inout")
-    sets.set_energy(L, "rim_l", 90.0 * rim)
-    sets.set_energy(L, "rim_r", 70.0 * rim)
+    sets.set_energy(L, "rim_l", 0.0)
+    sets.set_energy(L, "rim_r", 0.0)
     # overhead softbox lights the pile (D); it fades out for the grazing macro (E) and returns softly for the Tree (F)
     L["top"].data.energy = 1.6 * motion.ramp(T, 0.2, 6.0, "in") * (1 - motion.ramp(T, 6.4, 6.8, "inout")) + 0.9 * motion.ramp(T, 11.0, 14.0, "inout")
+    L["macro"].data.energy = 1.1 * motion.pulse(T, 6.2, 7.4, 10.4, "out", "inout")
     # ---- camera ----
     if T < SEG["E"][0]:
         D = S["D"]
         rig.set_camera(cam, (D["px"](T), D["py"](T), D["pz"](T)), (D["tx"](T), D["ty"](T), 0.0), 40.0, 4.0, roll=D["roll"](T))
     elif T < SEG["F"][0]:
         E = S["E"]
-        rig.set_camera(cam, (E["px"](T), E["py"](T), E["pz"](T)), (E["tx"](T), E["ty"](T), 0.004), 100.0, 2.0, focus=E["foc"](T))
+        el, az, d = math.radians(E["el"](T)), math.radians(E["az"](T)), E["dist"](T)
+        tp = Vector((E["tx"](T), E["ty"](T), 0.004))
+        cp = tp + Vector((d * math.sin(az) * math.cos(el), -d * math.cos(az) * math.cos(el), d * math.sin(el)))
+        rig.set_camera(cam, tuple(cp), tuple(tp), 100.0, 2.8, focus=d * E["foc"](T))
+        L["macro"].location = (tp.x - 0.28, tp.y - 0.12, 0.20)
+        L["macro"].rotation_euler = rig.look_rot(L["macro"].location, tuple(tp))
     else:
         F = S["F"]
         el, az, d = math.radians(F["el"](T)), math.radians(F["az"](T)), F["dist"](T)

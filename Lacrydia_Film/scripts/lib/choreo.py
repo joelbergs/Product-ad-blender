@@ -61,7 +61,7 @@ def glide_events():
 
 # ---- other shots (local times from the shot modules) ---------------------------------------------------------------
 H_T0, H_STEP = 0.9, 0.17                      # logo slits (shot H)
-B_WAKE = (0.8, 3.2)                           # hero photo wakes (B)
+B_WAKE = (0.5, 2.8)                           # hero photo wakes (B)
 C_WAKE = dict(p2=(1.0, 2.4), p3=(1.9, 3.4))   # panels wake in depth (C)
 G_WAKE, G_SWAP = (0.5, 1.8), (2.7, 3.6)       # device screen wakes / crossfades to the sharing screen (G)
 A_SWEEP = (0.6, 2.0, 4.2)                     # sweep light envelope in A (rise, peak, end)

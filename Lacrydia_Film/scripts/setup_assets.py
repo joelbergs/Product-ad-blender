@@ -19,6 +19,6 @@ for f in glob.glob(f"{SRC}/docs/screens/tour/*.png"):
     cp(f, os.path.join(A, "screens", os.path.basename(f))); n += 1
 for name in ("ikon-09-white.svg", "ikon-09-accent.svg", "ikon-09-ink.svg"):
     cp(f"{SRC}/design/brand/LOGGA/svg/{name}", os.path.join(A, "logo", name)); n += 1
-for name in ("wordmark-on-ink.svg", "lockup-horizontal-on-ink.svg", "lockup-horizontal-tagline-on-ink.svg"):
+for name in ("wordmark-on-ink.svg", "wordmark-on-ink.png", "lockup-stacked-on-ink.png", "lockup-stacked-on-ink.svg"):
     cp(f"{SRC}/design/brand/logos/{name}", os.path.join(A, "logo", name)); n += 1
 print(f"copied {n} files into {A}")

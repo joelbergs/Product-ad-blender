@@ -3,6 +3,7 @@ import math
 import numpy as np
 import bpy
 from mathutils import Vector, Matrix
+from .anim import K
 
 
 def fresh_scene(fps=30):
@@ -77,9 +78,13 @@ def set_camera(cam, pos, target, focal, fstop, focus=None, roll=0.0):
     cd.lens = focal
     cd.dof.aperture_fstop = fstop
     cd.dof.focus_distance = focus if focus is not None else (Vector(target) - Vector(pos)).length
+    if K.baking:                                   # lens / aperture / focus must be animated too, or every frame gets the last one
+        cd.keyframe_insert("lens", frame=K.frame)
+        cd.dof.keyframe_insert("aperture_fstop", frame=K.frame)
+        cd.dof.keyframe_insert("focus_distance", frame=K.frame)
 
 
-def configure_render(sc, w, h, samples=64, denoise=True, adaptive=0.02, motion_blur=True, shutter=0.5, view="AgX",
+def configure_render(sc, w, h, samples=64, denoise=True, adaptive=0.015, motion_blur=True, shutter=0.5, view="AgX",
                      look="None", exposure=1.0):
     r = sc.render
     r.engine = "CYCLES"
@@ -111,6 +116,7 @@ def configure_render(sc, w, h, samples=64, denoise=True, adaptive=0.02, motion_b
     c.film_exposure = exposure
     c.pixel_filter_type = "BLACKMAN_HARRIS"
     c.filter_width = 1.4
+    r.use_persistent_data = True
     r.use_motion_blur = motion_blur
     r.motion_blur_shutter = shutter
     r.film_transparent = False

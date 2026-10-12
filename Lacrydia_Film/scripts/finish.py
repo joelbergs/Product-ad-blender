@@ -138,7 +138,7 @@ def bloom(lin):
         return lin
     b1 = cv2.GaussianBlur(hi, (0, 0), 0.006 * W)
     b2 = cv2.GaussianBlur(hi, (0, 0), 0.025 * W)
-    return lin + 0.20 * b1 + 0.16 * b2
+    return lin + 0.09 * b1 + 0.06 * b2
 
 _vig = None
 def vignette():

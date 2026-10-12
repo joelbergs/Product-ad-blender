@@ -26,8 +26,10 @@ def principled(nt, **kw):
     return n
 
 
-def obsidian(name="Obsidian", base=0.003, rough=0.11):
-    """Black volcanic glass: deep mirror with a hint of micro-variation so reflections never look like CG."""
+def obsidian(name="Obsidian", base=0.003, rough=0.11, pools=((0.0, 0.0, 0.34, 0.80),), spec=0.55):
+    """Black volcanic glass, present only as a *reflective pool* round the subject(s): it fades to nothing (the black void)
+    beyond each pool radius, so bright strip lights never mirror as hard blobs in the far foreground.
+    pools: ((cx, cy, r_solid, r_gone), ...)."""
     m, nt = _new(name)
     tc = nt.nodes.new("ShaderNodeTexCoord")
     noise = nt.nodes.new("ShaderNodeTexNoise")
@@ -38,31 +40,52 @@ def obsidian(name="Obsidian", base=0.003, rough=0.11):
     mr = nt.nodes.new("ShaderNodeMapRange")
     mr.inputs["From Min"].default_value = 0.3
     mr.inputs["From Max"].default_value = 0.7
-    mr.inputs["To Min"].default_value = rough * 0.8
-    mr.inputs["To Max"].default_value = rough * 1.6
+    mr.inputs["To Min"].default_value = rough * 0.92
+    mr.inputs["To Max"].default_value = rough * 1.25
     nt.links.new(noise.outputs["Fac"], mr.inputs["Value"])
     bump = nt.nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = 0.004
+    bump.inputs["Strength"].default_value = 0.0008
     bump.inputs["Distance"].default_value = 0.001
     nt.links.new(noise.outputs["Fac"], bump.inputs["Height"])
-    p = principled(nt, **{"Base Color": (base, base, base * 1.4, 1), "Metallic": 0.0, "Specular IOR Level": 0.6,
-                          "IOR": 1.55})
+    p = principled(nt, **{"Base Color": (base, base, base * 1.4, 1), "Metallic": 0.0, "Specular IOR Level": spec, "IOR": 1.55})
     nt.links.new(mr.outputs["Result"], p.inputs["Roughness"])
     nt.links.new(bump.outputs["Normal"], p.inputs["Normal"])
-    # when the floor is seen *via a glossy bounce* (e.g. mirrored in the glass face) it is darkened to ~8%: the glass
-    # keeps its clean black reflections while the floor still reflects the object normally for the camera
+    # (1) when the floor is seen via a glossy bounce (mirrored in the glass) it is darkened to ~8%
     lp = nt.nodes.new("ShaderNodeLightPath")
-    clampn = nt.nodes.new("ShaderNodeMath")
-    clampn.operation = "MINIMUM"
-    clampn.inputs[1].default_value = 0.92
+    clampn = nt.nodes.new("ShaderNodeMath"); clampn.operation = "MINIMUM"; clampn.inputs[1].default_value = 0.92
     nt.links.new(lp.outputs["Glossy Depth"], clampn.inputs[0])
-    dark = nt.nodes.new("ShaderNodeEmission")
-    dark.inputs["Color"].default_value = (0, 0, 0, 1)
+    dark = nt.nodes.new("ShaderNodeEmission"); dark.inputs["Color"].default_value = (0, 0, 0, 1)
     mixd = nt.nodes.new("ShaderNodeMixShader")
     nt.links.new(clampn.outputs[0], mixd.inputs["Fac"])
-    nt.links.new(p.outputs[0], mixd.inputs[1])
-    nt.links.new(dark.outputs[0], mixd.inputs[2])
-    _out(nt, mixd)
+    nt.links.new(p.outputs[0], mixd.inputs[1]); nt.links.new(dark.outputs[0], mixd.inputs[2])
+    # (2) reflective pool: opacity = max over pools of 1 - smoothstep(dist)
+    geo_ = nt.nodes.new("ShaderNodeNewGeometry")
+    sp = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(geo_.outputs["Position"], sp.inputs["Vector"])
+    op = None
+    for k, (cx, cy, r0, r1) in enumerate(pools):
+        cmb = nt.nodes.new("ShaderNodeCombineXYZ")
+        ax = nt.nodes.new("ShaderNodeMath"); ax.operation = "SUBTRACT"; ax.inputs[1].default_value = cx
+        ay = nt.nodes.new("ShaderNodeMath"); ay.operation = "SUBTRACT"; ay.inputs[1].default_value = cy
+        nt.links.new(sp.outputs["X"], ax.inputs[0]); nt.links.new(sp.outputs["Y"], ay.inputs[0])
+        nt.links.new(ax.outputs[0], cmb.inputs["X"]); nt.links.new(ay.outputs[0], cmb.inputs["Y"])
+        ln = nt.nodes.new("ShaderNodeVectorMath"); ln.operation = "LENGTH"
+        nt.links.new(cmb.outputs[0], ln.inputs[0])
+        sm = nt.nodes.new("ShaderNodeMapRange"); sm.interpolation_type = "SMOOTHSTEP"
+        sm.inputs["From Min"].default_value = r0; sm.inputs["From Max"].default_value = r1
+        sm.inputs["To Min"].default_value = 1.0; sm.inputs["To Max"].default_value = 0.0
+        nt.links.new(ln.outputs["Value"], sm.inputs["Value"])
+        if op is None:
+            op = sm.outputs["Result"]
+        else:
+            mx = nt.nodes.new("ShaderNodeMath"); mx.operation = "MAXIMUM"
+            nt.links.new(op, mx.inputs[0]); nt.links.new(sm.outputs["Result"], mx.inputs[1])
+            op = mx.outputs[0]
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mixp = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(op, mixp.inputs["Fac"])
+    nt.links.new(tr.outputs[0], mixp.inputs[1]); nt.links.new(mixd.outputs[0], mixp.inputs[2])
+    _out(nt, mixp)
     return m
 
 
@@ -140,7 +163,8 @@ def emission(name, color=(1, 1, 1), strength=1.0):
 
 
 def screen(name, image_path, strength=1.0):
-    """Self-lit display: the real app screenshot as emission (sRGB), with a faint glossy layer for glass reflections."""
+    """Self-lit display: the real app screenshot as emission (sRGB). `vis_node` fades the whole layer to *transparent*
+    (an unlit emissive plane would otherwise still block whatever sits behind it)."""
     m, nt = _new(name)
     tex = nt.nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(image_path, check_existing=True)
@@ -150,8 +174,16 @@ def screen(name, image_path, strength=1.0):
     e = nt.nodes.new("ShaderNodeEmission")
     nt.links.new(tex.outputs["Color"], e.inputs["Color"])
     e.inputs["Strength"].default_value = strength
-    _out(nt, e)
+    vis = nt.nodes.new("ShaderNodeValue")
+    vis.outputs[0].default_value = 1.0
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(vis.outputs[0], mix.inputs["Fac"])
+    nt.links.new(tr.outputs[0], mix.inputs[1])
+    nt.links.new(e.outputs[0], mix.inputs[2])
+    _out(nt, mix)
     m["emit_node"] = e.name
+    m["vis_node"] = vis.name
     return m
 
 
@@ -165,7 +197,7 @@ def white_ceramic(name="LogoWhite", rough=0.18):
     return m
 
 
-def gradient_card(name="ReflCard", peak=1.5, tint=(1.0, 0.99, 0.97), angle=0.0, stops=((0.0, 0.0), (0.55, 0.0), (1.0, 1.0))):
+def gradient_card(name="ReflCard", peak=1.5, tint=(1.0, 0.99, 0.97), angle=0.0, stops=((0.0, 0.0), (0.55, 0.0), (1.0, 1.0)), down_only=False, soft_y=0.0):
     """Emissive reflection card with a smooth ramp (like a gradient flag): only ever seen as a soft gradient in glass."""
     m, nt = _new(name)
     tc = nt.nodes.new("ShaderNodeTexCoord")
@@ -186,7 +218,28 @@ def gradient_card(name="ReflCard", peak=1.5, tint=(1.0, 0.99, 0.97), angle=0.0, 
     mul.operation = "MULTIPLY"
     mul.inputs[1].default_value = peak
     nt.links.new(ramp.outputs["Color"], mul.inputs[0])
-    nt.links.new(mul.outputs[0], e.inputs["Strength"])
+    last = mul.outputs[0]
+    if soft_y > 0:                                   # smooth fall-off to the top/bottom edges (no hard-edged reflections)
+        a = nt.nodes.new("ShaderNodeMath"); a.operation = "SUBTRACT"; a.inputs[1].default_value = 0.5
+        nt.links.new(sep.outputs["Y"], a.inputs[0])
+        b = nt.nodes.new("ShaderNodeMath"); b.operation = "ABSOLUTE"
+        nt.links.new(a.outputs[0], b.inputs[0])
+        mr = nt.nodes.new("ShaderNodeMapRange"); mr.interpolation_type = "SMOOTHSTEP"
+        mr.inputs["From Min"].default_value = 0.5; mr.inputs["From Max"].default_value = 0.5 - soft_y
+        nt.links.new(b.outputs[0], mr.inputs["Value"])
+        my = nt.nodes.new("ShaderNodeMath"); my.operation = "MULTIPLY"
+        nt.links.new(last, my.inputs[0]); nt.links.new(mr.outputs[0], my.inputs[1])
+        last = my.outputs[0]
+    if down_only:                                    # emit only to rays travelling downwards (glass seen from above), never to the floor's upward reflections
+        g = nt.nodes.new("ShaderNodeNewGeometry")
+        gs = nt.nodes.new("ShaderNodeSeparateXYZ")
+        nt.links.new(g.outputs["Incoming"], gs.inputs["Vector"])
+        gt = nt.nodes.new("ShaderNodeMath"); gt.operation = "GREATER_THAN"; gt.inputs[1].default_value = 0.01
+        nt.links.new(gs.outputs["Z"], gt.inputs[0])
+        md = nt.nodes.new("ShaderNodeMath"); md.operation = "MULTIPLY"
+        nt.links.new(last, md.inputs[0]); nt.links.new(gt.outputs[0], md.inputs[1])
+        last = md.outputs[0]
+    nt.links.new(last, e.inputs["Strength"])
     _out(nt, e)
     m["peak_node"] = mul.name
     return m
@@ -224,7 +277,7 @@ def etched_glass(name, mask_path, ior=1.52, tint=(0.96, 0.985, 1.0), frost_rough
     return m
 
 
-def strip_emitter(name="StripEmit", color=(0.88, 0.94, 1.0), strength=20.0, end_fade=0.30, edge_soft=0.5):
+def strip_emitter(name="StripEmit", color=(0.88, 0.94, 1.0), strength=20.0, end_fade=0.30, edge_soft=0.5, no_upward=True):
     """Mesh emitter for strip lights: bright core, soft fall-off to both ends and across the width, so the strip's
     reflection in glass/obsidian is a refined streak instead of a hard-edged blown-out block. UV: u = across, v = along."""
     m, nt = _new(name)
@@ -250,9 +303,31 @@ def strip_emitter(name="StripEmit", color=(0.88, 0.94, 1.0), strength=20.0, end_
     nt.links.new(along, mul.inputs[0]); nt.links.new(across, mul.inputs[1])
     mul2 = nt.nodes.new("ShaderNodeMath"); mul2.operation = "MULTIPLY"; mul2.inputs[1].default_value = strength
     nt.links.new(mul.outputs[0], mul2.inputs[0])
+    last = mul2.outputs[0]
+    if no_upward:
+        # the strip only 'shows' to near-horizontal or downward rays: glass bevels (which mirror it horizontally) keep their
+        # full glints, but the floor (whose mirror rays travel upward) never prints the strip as a foreground streak
+        g = nt.nodes.new("ShaderNodeNewGeometry")
+        gs = nt.nodes.new("ShaderNodeSeparateXYZ")
+        nt.links.new(g.outputs["Incoming"], gs.inputs["Vector"])
+        mk = nt.nodes.new("ShaderNodeMapRange"); mk.interpolation_type = "SMOOTHSTEP"
+        mk.inputs["From Min"].default_value = -0.11; mk.inputs["From Max"].default_value = -0.03
+        mk.inputs["To Min"].default_value = 0.0; mk.inputs["To Max"].default_value = 1.0
+        nt.links.new(gs.outputs["Z"], mk.inputs["Value"])
+        mm = nt.nodes.new("ShaderNodeMath"); mm.operation = "MULTIPLY"
+        nt.links.new(last, mm.inputs[0]); nt.links.new(mk.outputs["Result"], mm.inputs[1])
+        last = mm.outputs[0]
     e = nt.nodes.new("ShaderNodeEmission")
     e.inputs["Color"].default_value = (*color, 1)
-    nt.links.new(mul2.outputs[0], e.inputs["Strength"])
+    nt.links.new(last, e.inputs["Strength"])
     _out(nt, e)
     m["peak_node"] = mul2.name
+    return m
+
+
+def clear(name="Clear"):
+    """fully transparent (used for the hidden faces of the layered screens)"""
+    m, nt = _new(name)
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    _out(nt, tr)
     return m

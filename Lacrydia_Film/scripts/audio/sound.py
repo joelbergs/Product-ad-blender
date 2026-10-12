@@ -224,8 +224,8 @@ def build_cues():
     add(3.88, "A_mark_tick", stereo(tick(12, 2500, 9000, 9, -28), -0.2), 0.0)
     # ---- B: orbit (5-11.5), hero photograph wakes
     add(S0["B"] + 0.2, "B_orbit_air", swoosh(6.2, -0.55, 0.55, -31, 7), 0.0)
-    add(S0["B"] + 1.25, "B_photo_enters", photo_accent(f("A4"), 0.0, 3, 0.0), -15)
-    add(S0["B"] + 1.85, "B_photo_enters_hi", photo_accent(f("E5"), 0.12, 4, 0.0, 1.4), -24)
+    add(S0["B"] + choreo.B_WAKE[0] + 0.45, "B_photo_enters", photo_accent(f("A4"), 0.0, 3, 0.0), -15)
+    add(S0["B"] + choreo.B_WAKE[0] + 1.1, "B_photo_enters_hi", photo_accent(f("E5"), 0.12, 4, 0.0, 1.4), -24)
     # ---- C: low hero (11.5-15.5): two more photographs wake in depth
     add(S0["C"] + 1.2, "C_photo2", photo_accent(f("F#4"), 0.45, 5, 0.0), -18)
     add(S0["C"] + 2.1, "C_photo3", photo_accent(f("B4"), -0.5, 6, 0.0), -19)
@@ -274,8 +274,15 @@ def build_cues():
     return cues
 
 
+# long-form dynamics: begin almost silent, grow through the Tree, breathe at the app, bloom on the mark, fall away
+GAIN_CURVE = [(0, -9), (3.5, -6), (5.5, -2), (12, -1.5), (15.5, -2.5), (22, -3), (25.5, -1.5), (31, +1.5), (34, 0.5), (36, -1.5),
+              (39, -0.5), (41.8, +1.5), (44.5, -3)]
+
+
 def master(x, target_lufs):
     x = x.copy()
+    g_t = D.db_curve(GAIN_CURVE, n=len(x))
+    x *= g_t[:, None]
     x = D.highpass(x, 24.0, order=1)
     x = D.compress(x, -11.0, 2.2, 140.0)
     # fade-in/out at the extremes

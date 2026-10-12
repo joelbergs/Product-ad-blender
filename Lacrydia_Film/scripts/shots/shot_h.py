@@ -20,7 +20,7 @@ T0 = 0.9
 def build(sc):
     S = {}
     rig.set_world(sc)
-    S["floor"] = sets.studio_floor(sc)
+    S["floor"] = sets.studio_floor(sc, pools=((0.0, 0.0, 0.18, 0.50),))
     polys, (mw, mh) = logo.polygons()
     sc_ = MARK_H / mh
     ceramic = mat.white_ceramic()
@@ -74,14 +74,14 @@ def apply(t, S):
         u = motion.ramp(t, ti, ti + 1.1, "out")
         slide = (1 - u) * -0.040                               # slits slide in from the left, ease-out
         ob.location = (slide, DEPTH / 2 * 0, CENTER[2])
-        ob.scale = (1, 1, 1 if u > 0.003 else 0.0001)
-        K.loc(ob, ob.location); K.scl(ob, tuple(ob.scale))
+        k_ = 1.0 if u > 0.002 else 1e-4                          # not yet arrived: effectively absent
+        K.loc(ob, ob.location); K.scl(ob, (k_, k_, k_))
     L = S["L"]
     sets.set_energy(L, "sweep", 0.0)
     for key, (t0, t1, base) in dict(rim_l=(0.2, 1.8, 170), rim_r=(0.6, 2.2, 130), top=(0.8, 2.4, 3), key=(0.8, 2.4, 1.8)).items():
         sets.set_energy(L, key, base * motion.ramp(t, t0, t1, "in"))
     ceramic = S["bars"][0].data.materials[0]
-    K.sock(ceramic.node_tree.nodes[ceramic["bsdf_node"]].inputs["Emission Strength"], 0.30)
+    K.sock(ceramic.node_tree.nodes[ceramic["bsdf_node"]].inputs["Emission Strength"], 0.62 * motion.ramp(t, 0.9, 3.0, "out") + 0.0)
 
 
 def receivers(S):
